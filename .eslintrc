@@ -1,0 +1,9 @@
+# https://github.com/airbnb/javascript#table-of-contents
+# http://www.acuriousanimal.com/2016/08/14/configuring-atom-with-eslint.html
+{
+  "extends": "airbnb",
+  "env": {},
+  "rules": {
+    "indent": ["error", 4]
+  }
+}
