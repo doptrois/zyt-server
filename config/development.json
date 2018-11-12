@@ -1,0 +1,7 @@
+{
+  "name": "Development",
+  "example": {
+    "key-one": "(development) value-one",
+    "key-two": "(development) value-two"
+  }
+}

@@ -1,3 +1,8 @@
 {
-  "jwtPrivateKey": "zyt_jwtPrivateKey"
+  "jwtPrivateKey": "zyt_jwtPrivateKey",
+  "mail": {
+    "host": "zyt_mailServerHost",
+    "username": "zyt_mailServerUsrName",
+    "passwort": "zyt_mailServerPassword"
+  }
 }

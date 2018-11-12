@@ -1,3 +1,13 @@
 {
-  "jwtPrivateKey": ""
+  "jwtPrivateKey": "",
+  "name": "Default",
+  "example": {
+    "key-one": "(default) value-one",
+    "key-two": "(default) value-two"
+  },
+  "mail": {
+    "host": "zyt_mailServerHost",
+    "username": "zyt_mailServerUsrName",
+    "passwort": "zyt_mailServerPassword"
+  }
 }
