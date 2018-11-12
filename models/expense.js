@@ -1,11 +1,12 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const ExpenseSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    recorded_time: { type: Number },
+    recorded_time: { type: Number, min: 0, required: true },
     affected_date: { type: Date, default: Date.now },
-    comment: { type: String },
+    comment: { type: String, required: true },
     archived: { type: Boolean, default: false }
 });
 

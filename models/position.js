@@ -10,7 +10,7 @@ const PositionSchema = new mongoose.Schema({
             description: { type: String, required: true, trim: true }
         }
     },
-    total_time_offered: { type: Number },
+    total_time_offered: { type: Number, min: 0, required: true },
     todos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Todo' }],
     deadline: { type: Date, default: Date.now },
     archived: { type: Boolean, default: false }
@@ -26,7 +26,7 @@ function validatePosition(project) {
             title: Joi.string().required(),
             description: Joi.string().required()
         }).required(),
-        total_time_offered: Joi.number().required(),
+        total_time_offered: Joi.number().min(0).required(),
         todos: Joi.array().items(Joi.objectId()),
         deadline: Joi.date(),
         archived: Joi.boolean()
