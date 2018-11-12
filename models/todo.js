@@ -1,4 +1,5 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const TodoSchema = new mongoose.Schema({
@@ -9,7 +10,7 @@ const TodoSchema = new mongoose.Schema({
             description: { type: String, required: true, trim: true }
         }
     },
-    total_time_expected: { type: Number, min: 0 },
+    total_time_expected: { type: Number, min: 0, required: true },
     expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Expense' }],
     archived: { type: Boolean, default: false },
     assigned_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -28,7 +29,13 @@ function validateTodo(todo) {
             title: Joi.string().required(),
             description: Joi.string().required()
         }).required(),
-        total_time_expected: Joi.number().min(0).required()
+        total_time_expected: Joi.number().min(0).required(),
+        expenses: Joi.array().items(Joi.objectId()),
+        archived: Joi.boolean(),
+        assigned_users: Joi.array().items(Joi.objectId()),
+        owner: Joi.objectId(),
+        deadline: Joi.date(),
+        status: Joi.number().valid(0,1,2,3)
     };
     return Joi.validate(todo, schema);
 }

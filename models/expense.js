@@ -3,7 +3,7 @@ Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const ExpenseSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     recorded_time: { type: Number, min: 0, required: true },
     affected_date: { type: Date, default: Date.now },
     comment: { type: String, required: true },
@@ -16,7 +16,7 @@ const Expense = mongoose.model('Expense', ExpenseSchema);
 function validateExpense(expense) {
     const schema = {
         user: Joi.objectId().required(),
-        recorded_time: Joi.number().required(),
+        recorded_time: Joi.number().min(0).required(),
         affected_date: Joi.date(),
         comment: Joi.string().required(),
         archived: Joi.boolean()
