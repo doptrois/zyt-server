@@ -38,7 +38,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
-    const avatar = await Avatar.findByIdAndUpdate(req.params.id, { archived: true }}, { new: true });
+    const avatar = await Avatar.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!avatar) return res.status(404).send('The avatar with the given ID was not found.');
     res.send(avatar);
 });

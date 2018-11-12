@@ -72,7 +72,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
-    const project = await Project.findByIdAndUpdate(req.params.id, { archived: true }}, { new: true });
+    const project = await Project.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!project) return res.status(404).send('The project with the given ID was not found.');
     res.send(project);
 });

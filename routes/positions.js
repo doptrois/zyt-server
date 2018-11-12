@@ -61,7 +61,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
-    const position = await Position.findByIdAndUpdate(req.params.id, { archived: true }}, { new: true });
+    const position = await Position.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!position) return res.status(404).send('The position with the given ID was not found.');
     res.send(position);
 });
