@@ -1,6 +1,25 @@
+
+
+
+
+
+
+
+const startupDebugger = require('debug')('app:startup');
+const dbDebugger = require('debug')('app:db');
+// Usage:
+// $ export DEBUG=app:startup && nodemon index.js
+// The following js code only appears in the console,
+// if the environment variable DEBUG is set to app:startup
+// startupDebugger('Custom message')
+// combination:
+// $ export DEBUG=app:startup,app:db
+// or everithing:
+// $ export DEBUG=app:*
+
+const helmet = require('helmet');
+const morgan = require('morgan');
 const config = require('config');
-const Joi = require('joi');
-Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const projects = require('./routes/projects');
 const positions = require('./routes/positions');
@@ -26,6 +45,27 @@ mongoose.connect('mongodb://localhost/zyt',
     })
     .then(() => console.log('Connected to MongoDB...'))
     .catch(err => console.error('Could not connect to MongoDB...'));
+
+app.use(helmet());
+
+// To change environment
+// $ export NODE_ENV=production
+// $ export NODE_ENV=development
+// if nothing is set previously, the environment is 'development' by default.
+if (app.get('env') === 'development') {
+    app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+}
+// To get the configuration for the current environment:
+// config.get('name')
+// config.get('example.key-one')
+// config.get('example.key-one')
+// the file names 'development' and 'production' corresponds to the defined environment
+// that was set by 'export NODE_ENV=XYZ' in the terminal.
+
+// Custom environment variables
+// $ export zyt_mailServerHost=1234
+// declare/map in: config/custom-environment-variables.json
+// usage: config.get('mail.host')
 
 app.use(express.json());
 app.use('/api/projects', projects);
