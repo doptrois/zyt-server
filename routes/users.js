@@ -4,6 +4,7 @@ const config = require('config');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const {User, validate} = require('../models/user');
+const oIdValidator = require('../middleware/oIdValidator');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
     res.send(users);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', oIdValidator, async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const user = await User
         .findById(req.params.id)
@@ -40,7 +41,7 @@ router.post('/', async (req, res) => {
     res.send(user);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', oIdValidator, async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
@@ -49,7 +50,7 @@ router.put('/:id', async (req, res) => {
     res.send(user);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', oIdValidator, async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const user = await User.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!user) return res.status(404).send('The user with the given ID was not found.');

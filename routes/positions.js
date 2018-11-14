@@ -1,6 +1,7 @@
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const {Position, validate} = require('../models/position');
+const oIdValidator = require('../middleware/oIdValidator');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -33,8 +34,7 @@ router.get('/', async (req, res) => {
     res.send(positions);
 });
 
-router.get('/:id', async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
+router.get('/:id', oIdValidator, async (req, res) => {
     const position = await Position
         .findById(req.params.id)
         .populate(populateConfig);
@@ -50,8 +50,7 @@ router.post('/', async (req, res) => {
     res.send(position);
 });
 
-router.put('/:id', async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
+router.put('/:id', oIdValidator, async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const position = await Position.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -59,8 +58,7 @@ router.put('/:id', async (req, res) => {
     res.send(position);
 });
 
-router.delete('/:id', async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
+router.delete('/:id', oIdValidator, async (req, res) => {
     const position = await Position.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!position) return res.status(404).send('The position with the given ID was not found.');
     res.send(position);
