@@ -14,7 +14,6 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', oIdValidator, async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const avatar = await Avatar.findById(req.params.id);
     if (!avatar) return res.status(404).send('The avatar with the given ID was not found.');
     res.send(avatar);
@@ -29,7 +28,6 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', oIdValidator, async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const avatar = await Avatar.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -38,7 +36,6 @@ router.put('/:id', oIdValidator, async (req, res) => {
 });
 
 router.delete('/:id', oIdValidator, async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const avatar = await Avatar.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!avatar) return res.status(404).send('The avatar with the given ID was not found.');
     res.send(avatar);

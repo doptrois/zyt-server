@@ -26,7 +26,6 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', oIdValidator, async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const expense = await Expense
         .findById(req.params.id)
         .populate(populateConfig);
@@ -43,7 +42,6 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', oIdValidator, async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -52,7 +50,6 @@ router.put('/:id', oIdValidator, async (req, res) => {
 });
 
 router.delete('/:id', oIdValidator, async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('The given ID was not a valid ObjectID.');
     const expense = await Expense.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!expense) return res.status(404).send('The expense with the given ID was not found.');
     res.send(expense);
