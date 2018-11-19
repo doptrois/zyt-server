@@ -50,7 +50,7 @@ router.post('/', [auth], async (req, res) => {
     res.send(position);
 });
 
-router.put('/:id', [auth, oIdValidator], async (req, res) => {
+router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const position = await Position.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -58,7 +58,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
     res.send(position);
 });
 
-router.delete('/:id', [auth, oIdValidator], async (req, res) => {
+router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const position = await Position.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!position) return res.status(404).send('The position with the given ID was not found.');
     res.send(position);

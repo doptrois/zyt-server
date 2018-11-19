@@ -1,4 +1,5 @@
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const bcrypt = require('bcrypt');
@@ -16,7 +17,7 @@ const populateConfig = [
     }
 ];
 
-const dbSelectProperties = 'isAdmin first_name surname email archived avatar';
+const dbSelectProperties = 'admin first_name surname email archived avatar';
 
 router.get('/', [auth], async (req, res) => {
     const users = await User
@@ -34,7 +35,7 @@ router.get('/me', [auth], async (req, res) => {
     res.send(users);
 });
 
-router.get('/:id', [auth, oIdValidator], async (req, res) => {
+router.get('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const user = await User
         .findById(req.params.id)
         .select(dbSelectProperties)
@@ -64,7 +65,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
     res.send(user);
 });
 
-router.delete('/:id', [auth, oIdValidator], async (req, res) => {
+router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     let user = await User.findByIdAndUpdate(req.params.id, { archived: true });
     if (!user) return res.status(404).send('The user with the given ID was not found.');
     res.send(user);

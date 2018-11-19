@@ -49,7 +49,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
     res.send(expense);
 });
 
-router.delete('/:id', [auth, oIdValidator], async (req, res) => {
+router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const expense = await Expense.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!expense) return res.status(404).send('The expense with the given ID was not found.');
     res.send(expense);

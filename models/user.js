@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     first_name: { type: String, required: true, maxlength: 255 },
     surname: { type: String, required: true, maxlength: 255 },
-    isAdmin: { type: Boolean, default: false },
+    admin: { type: Boolean, default: false },
     email: { type: String, required: true, maxlength: 255, unique: true },
     archived: { type: Boolean, default: false },
     avatar: { type: mongoose.Schema.Types.ObjectId, ref: 'Avatar' },
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
+    const token = jwt.sign({ _id: this._id, admin: this.admin }, config.get('jwtPrivateKey'));
     return token;
 }
 
@@ -26,7 +26,7 @@ function validateUser(user) {
     const schema = {
         first_name: Joi.string().max(255).required(),
         surname: Joi.string().max(255).required(),
-        isAdmin: Joi.boolean(),
+        admin: Joi.boolean(),
         email: Joi.string().max(255).required().email(),
         archived: Joi.boolean(),
         avatar: Joi.objectId().required(),

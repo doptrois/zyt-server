@@ -39,7 +39,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
     res.send(avatar);
 });
 
-router.delete('/:id', [auth, oIdValidator], async (req, res) => {
+router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const avatar = await Avatar.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!avatar) return res.status(404).send('The avatar with the given ID was not found.');
 
