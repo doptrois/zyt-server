@@ -16,11 +16,19 @@ const populateConfig = [
     }
 ];
 
-const dbSelectProperties = 'isAdmin first_name surname archived avatar';
+const dbSelectProperties = 'isAdmin first_name surname email archived avatar';
 
 router.get('/', [auth], async (req, res) => {
     const users = await User
         .find()
+        .select(dbSelectProperties)
+        .populate(populateConfig);
+    res.send(users);
+});
+
+router.get('/me', [auth], async (req, res) => {
+    const users = await User
+        .findById(req.user._id)
         .select(dbSelectProperties)
         .populate(populateConfig);
     res.send(users);
