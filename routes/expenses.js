@@ -17,7 +17,7 @@ const populateConfig = [
     }
 ];
 
-router.get('/', async (req, res) => {
+router.get('/', [auth], async (req, res) => {
     const expenses = await Expense
         .find()
         .populate(populateConfig)
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     res.send(expenses);
 });
 
-router.get('/:id', oIdValidator, async (req, res) => {
+router.get('/:id', [auth, oIdValidator], async (req, res) => {
     const expense = await Expense
         .findById(req.params.id)
         .populate(populateConfig);
@@ -33,7 +33,7 @@ router.get('/:id', oIdValidator, async (req, res) => {
     res.send(expense);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     let expense = new Expense(req.body);
@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
     res.send(expense);
 });
 
-router.put('/:id', oIdValidator, async (req, res) => {
+router.put('/:id', [auth, oIdValidator], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -49,7 +49,7 @@ router.put('/:id', oIdValidator, async (req, res) => {
     res.send(expense);
 });
 
-router.delete('/:id', oIdValidator, async (req, res) => {
+router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     const expense = await Expense.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!expense) return res.status(404).send('The expense with the given ID was not found.');
     res.send(expense);

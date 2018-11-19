@@ -18,7 +18,7 @@ const populateConfig = [
 
 const dbSelectProperties = 'isAdmin first_name surname archived avatar';
 
-router.get('/', async (req, res) => {
+router.get('/', [auth], async (req, res) => {
     const users = await User
         .find()
         .select(dbSelectProperties)
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
     res.send(users);
 });
 
-router.get('/:id', oIdValidator, async (req, res) => {
+router.get('/:id', [auth, oIdValidator], async (req, res) => {
     const user = await User
         .findById(req.params.id)
         .select(dbSelectProperties)
@@ -35,22 +35,20 @@ router.get('/:id', oIdValidator, async (req, res) => {
     res.send(user);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send('User alread registered');
     user = new User(_.pick(req.body, ['first_name', 'surname', 'email', 'avatar', 'password']));
-
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
-
     user = await user.save();
-    res.send(_.pick(req.body, ['_id', 'first_name', 'surname', 'email', 'avatar']));
+    const token = user.generateAuthToken();
+    res.header('x-auth-token', token).send(_.pick(req.body, ['_id', 'first_name', 'surname', 'email', 'avatar']));
 });
 
-// tbd
-router.put('/:id', oIdValidator, async (req, res) => {
+router.put('/:id', [auth, oIdValidator], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -58,7 +56,7 @@ router.put('/:id', oIdValidator, async (req, res) => {
     res.send(user);
 });
 
-router.delete('/:id', oIdValidator, async (req, res) => {
+router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     let user = await User.findByIdAndUpdate(req.params.id, { archived: true });
     if (!user) return res.status(404).send('The user with the given ID was not found.');
     res.send(user);

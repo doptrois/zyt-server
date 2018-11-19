@@ -20,7 +20,7 @@ const todos = require('./routes/todos');
 const expenses = require('./routes/expenses');
 const avatars = require('./routes/avatars');
 const users = require('./routes/users');
-// const auth = require('./routes/auth');
+const auth = require('./routes/auth');
 const express = require('express');
 const app = express();
 
@@ -67,7 +67,7 @@ app.use('/api/todos', todos);
 app.use('/api/expenses', expenses);
 app.use('/api/avatars', avatars);
 app.use('/api/users', users);
-// app.use('/api/auth', auth);
+app.use('/api/auth', auth);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));

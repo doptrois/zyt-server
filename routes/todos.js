@@ -36,7 +36,7 @@ const populateConfig = [
     }
 ];
 
-router.get('/', async (req, res) => {
+router.get('/', [auth], async (req, res) => {
     const todos = await Todo
         .find()
         .populate(populateConfig)
@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
     res.send(todos);
 });
 
-router.get('/:id', oIdValidator, async (req, res) => {
+router.get('/:id', [auth, oIdValidator], async (req, res) => {
     const todo = await Todo
         .findById(req.params.id)
         .populate(populateConfig);
@@ -52,7 +52,7 @@ router.get('/:id', oIdValidator, async (req, res) => {
     res.send(todo);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     let todo = new Todo(req.body);
@@ -60,7 +60,7 @@ router.post('/', async (req, res) => {
     res.send(todo);
 });
 
-router.put('/:id', oIdValidator, async (req, res) => {
+router.put('/:id', [auth, oIdValidator], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -68,11 +68,10 @@ router.put('/:id', oIdValidator, async (req, res) => {
     res.send(todo);
 });
 
-router.delete('/:id', oIdValidator, async (req, res) => {
+router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     const todo = await Todo.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!todo) return res.status(404).send('The todo with the given ID was not found.');
     res.send(todo);
 });
-
 
 module.exports = router;

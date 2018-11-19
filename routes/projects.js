@@ -36,7 +36,7 @@ const populateConfig = [
     }
 ];
 
-router.get('/', async (req, res) => {
+router.get('/', [auth], async (req, res) => {
     const projects = await Project
         .find()
         .select()
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
     res.send(projects);
 });
 
-router.get('/:id', oIdValidator, async (req, res) => {
+router.get('/:id', [auth, oIdValidator], async (req, res) => {
     const project = await Project
         .findById(req.params.id)
         .populate(populateConfig);
@@ -53,7 +53,7 @@ router.get('/:id', oIdValidator, async (req, res) => {
     res.send(project);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [auth], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     let project = new Project(req.body);
@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
     res.send(project);
 });
 
-router.put('/:id', oIdValidator, async (req, res) => {
+router.put('/:id', [auth, oIdValidator], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -69,7 +69,7 @@ router.put('/:id', oIdValidator, async (req, res) => {
     res.send(project);
 });
 
-router.delete('/:id', oIdValidator, async (req, res) => {
+router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     const project = await Project.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!project) return res.status(404).send('The project with the given ID was not found.');
     res.send(project);
