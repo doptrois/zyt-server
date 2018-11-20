@@ -1,15 +1,5 @@
-const startupDebugger = require('debug')('app:startup');
-const dbDebugger = require('debug')('app:db');
-// Usage:
-// $ export DEBUG=app:startup && nodemon index.js
-// The following js code only appears in the console,
-// if the environment variable DEBUG is set to app:startup
-// startupDebugger('Custom message')
-// combination:
-// $ export DEBUG=app:startup,app:db
-// or everithing:
-// $ export DEBUG=app:*
-
+require('express-async-errors');
+const error = require('./middleware/error');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const config = require('config');
@@ -68,6 +58,7 @@ app.use('/api/expenses', expenses);
 app.use('/api/avatars', avatars);
 app.use('/api/users', users);
 app.use('/api/auth', auth);
+app.use(error);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
