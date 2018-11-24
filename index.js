@@ -1,3 +1,4 @@
+const cors = require('cors');
 const debug = require('debug')('app:runtime');
 require('express-async-errors');
 const error = require('./middleware/error');
@@ -55,6 +56,8 @@ if (app.get('env') === 'development') {
 // declare/map in: config/custom-environment-variables.json
 // usage: config.get('mail.host')
 
+app.use(cors());
+app.options('*', cors());
 app.use(express.json());
 app.use('/api/projects', projects);
 app.use('/api/positions', positions);
