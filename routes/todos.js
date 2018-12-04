@@ -40,7 +40,10 @@ router.get('/', [auth], async (req, res) => {
     const todos = await Todo
         .find()
         .populate(populateConfig)
-        .sort('name');
+        .sort('deadline');
+
+    if (!todos) return res.status(404).send('No todos found.');
+
     res.send(todos);
 });
 
