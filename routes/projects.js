@@ -37,19 +37,49 @@ const populateConfig = [
 ];
 
 router.get('/', [auth], async (req, res) => {
-    const projects = await Project
+    let projects = await Project
         .find()
         .select()
-        .populate(populateConfig)
-        .sort('surname');
+        .populate(populateConfig);
+
+    if (!projects) return res.status(404).send('No projects found.');
+
+    // return only projects that are assigned to the user,
+    // if user is not admin
+    if (!req.user.admin) {
+        projects = projects.filter((project) => {
+            if (
+                project.assigned_users.find(user => user._id == req.user._id) ||
+                project.project_managers.find(user => user._id == req.user._id)
+            ) {
+            	return true;
+            }
+        });
+
+        if(!projects.length) return res.status(404).send('No projects found. You are not assigned to any projects.');
+    }
+
     res.send(projects);
 });
 
 router.get('/:id', [auth, oIdValidator], async (req, res) => {
-    const project = await Project
+    let project = await Project
         .findById(req.params.id)
         .populate(populateConfig);
+
     if (!project) return res.status(404).send('The project with the given ID was not found.');
+
+    // return only project if assigned to the user,
+    // if user is not admin
+    if (!req.user.admin) {
+        if (
+            !project.assigned_users.find(user => user._id == req.user._id) ||
+            !project.project_managers.find(user => user._id == req.user._id)
+        ) {
+            return res.status(403).send('You are not assigned to this project.');
+        }
+    }
+
     res.send(project);
 });
 
