@@ -15,6 +15,7 @@ const projectSchema = new mongoose.Schema({
     assigned_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     start: { type: Date, default: Date.now },
     deadline: { type: Date, default: Date.now },
+    total_time_offered: { type: Number, min: 0, required: true },
     archived: { type: Boolean, default: false }
 });
 
@@ -28,10 +29,12 @@ function validateProject(project) {
             title: Joi.string().required(),
             description: Joi.string().required()
         }).required(),
-        project_manager: Joi.array().items(Joi.objectId()),
+        project_managers: Joi.array().items(Joi.objectId()),
         positions: Joi.array().items(Joi.objectId()),
+        assigned_users: Joi.array().items(Joi.objectId()),
         start: Joi.date(),
         deadline: Joi.date(),
+        total_time_offered: Joi.number().min(0).required(),
         archived: Joi.boolean()
     };
     return Joi.validate(project, schema);
