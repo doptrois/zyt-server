@@ -19,7 +19,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
     res.send(avatar);
 });
 
-router.post('/', [auth], async (req, res) => {
+router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -29,7 +29,7 @@ router.post('/', [auth], async (req, res) => {
     res.send(avatar);
 });
 
-router.put('/:id', [auth, oIdValidator], async (req, res) => {
+router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
