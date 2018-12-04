@@ -16,6 +16,7 @@ const Expense = mongoose.model('Expense', ExpenseSchema);
 function validateExpense(expense) {
     const schema = {
         user: Joi.objectId().required(),
+        todo: Joi.objectId().required(),
         recorded_time: Joi.number().min(0).required(),
         affected_date: Joi.date(),
         comment: Joi.string().required(),
