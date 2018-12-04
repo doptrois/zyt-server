@@ -22,6 +22,7 @@ const Position = mongoose.model('Position', PositionSchema);
 function validatePosition(project) {
     const schema = {
         name: Joi.string().required(),
+        project: Joi.objectId().required(),
         briefing: Joi.object({
             title: Joi.string().required(),
             description: Joi.string().required()
