@@ -2,7 +2,7 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
-const TodoSchema = new mongoose.Schema({
+const todoSchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true },
     briefing: {
         type: {
@@ -19,7 +19,7 @@ const TodoSchema = new mongoose.Schema({
     status: { type: Number, enum: [0,1,2,3], default: 0 }
 });
 
-const Todo = mongoose.model('Todo', TodoSchema);
+const Todo = mongoose.model('Todo', todoSchema);
 
 // User input validation
 function validateTodo(todo) {
