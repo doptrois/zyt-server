@@ -12,6 +12,7 @@ const todos = require('./routes/todos');
 const expenses = require('./routes/expenses');
 const avatars = require('./routes/avatars');
 const users = require('./routes/users');
+const ressources = require('./routes/ressources');
 const auth = require('./routes/auth');
 const express = require('express');
 const app = express();
@@ -65,6 +66,7 @@ app.use('/api/todos', todos);
 app.use('/api/expenses', expenses);
 app.use('/api/avatars', avatars);
 app.use('/api/users', users);
+app.use('/api/ressources', ressources);
 app.use('/api/auth', auth);
 app.use(error);
 
