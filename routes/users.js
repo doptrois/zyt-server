@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
-const {User, validate} = require('../models/user');
+const {User, validate, validateExisting} = require('../models/user');
 const oIdValidator = require('../middleware/oIdValidator');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -58,11 +58,29 @@ router.post('/', [auth, admin], async (req, res) => {
 });
 
 router.put('/:id', [auth, oIdValidator], async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateExisting(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+    let user = await User
+        .findById(req.params.id)
+        .populate(populateConfig);
     if (!user) return res.status(404).send('The user with the given ID was not found.');
-    res.send(user);
+
+    if (!req.user.admin) {
+        if (user._id != req.user._id) return res.status(403).send('Access denied. Modifiying user properties are restricted to the user itself or admins.');
+    }
+
+    if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+        user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(populateConfig);
+
+        const token = user.generateAuthToken();
+        res.header('x-auth-token', token).send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
+    } else {
+        user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(populateConfig);
+        res.send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
+    }
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {

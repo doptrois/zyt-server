@@ -36,5 +36,21 @@ function validateUser(user) {
     return Joi.validate(user, schema);
 }
 
+// User input validation
+function validateExistingUser(user) {
+    const schema = {
+        first_name: Joi.string().max(255),
+        surname: Joi.string().max(255),
+        admin: Joi.boolean(),
+        email: Joi.string().max(255).email(),
+        archived: Joi.boolean(),
+        avatar: Joi.objectId(),
+        password: Joi.string().min(6).max(255)
+    };
+
+    return Joi.validate(user, schema);
+}
+
 exports.User = User;
 exports.validate = validateUser;
+exports.validateExisting = validateExistingUser;
