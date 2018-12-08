@@ -33,6 +33,18 @@ const populateConfig = [
             path: 'avatar',
             select: 'url'
         }
+    },
+    {
+        path: 'ressources',
+        select: 'assigned_users archived start stop',
+        populate: {
+            path: 'assigned_users',
+            select: 'first_name surname archived avatar',
+            populate: {
+                path: 'avatar',
+                select: 'url'
+            }
+        }
     }
 ];
 
