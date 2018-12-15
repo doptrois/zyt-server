@@ -1,6 +1,6 @@
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const {Project, validate} = require('../models/project');
+const {Project, validate, validateExisting} = require('../models/project');
 const oIdValidator = require('../middleware/oIdValidator');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -9,7 +9,7 @@ const router = express.Router();
 const populateConfig = [
     {
         path: 'project_managers',
-        select: 'first_name surname archived avatar',
+        select: 'first_name surname archived',
         populate: {
             path: 'avatar',
             select: 'url'
@@ -18,17 +18,27 @@ const populateConfig = [
     {
         path: 'positions',
         populate: {
-            path: 'todos',
-            select: 'expenses name total_time_expected archived deadline status',
+            path: 'expenses',
+            select: 'recorded_time user affected_date',
             populate: {
-                path: 'expenses',
-                select: ['recorded_time']
+                path: 'user',
+                select: 'first_name surname archived'
             }
         }
     },
     {
+        path: 'todos',
+        select: '-project',
+        populate: [
+            {
+                path: 'assigned_users',
+                select: 'first_name surname archived'
+            }
+        ]
+    },
+    {
         path: 'assigned_users',
-        select: 'first_name surname archived avatar',
+        select: 'first_name surname archived',
         populate: {
             path: 'avatar',
             select: 'url'
@@ -36,15 +46,14 @@ const populateConfig = [
     },
     {
         path: 'ressources',
-        select: 'assigned_users archived start stop',
-        populate: {
-            path: 'assigned_users',
-            select: 'first_name surname archived avatar',
-            populate: {
-                path: 'avatar',
-                select: 'url'
-            }
-        }
+        select: 'assigned_user total_time_expected start stop',
+        populate: [
+            {
+                path: 'assigned_user',
+                select: 'archived first_name surname'
+            },
+
+        ]
     }
 ];
 
@@ -104,7 +113,7 @@ router.post('/', [auth, admin], async (req, res) => {
 });
 
 router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateExisting(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!project) return res.status(404).send('The project with the given ID was not found.');

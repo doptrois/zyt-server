@@ -1,6 +1,7 @@
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const {Ressource, validate} = require('../models/ressource');
+const {Ressource, validate, validateExisting} = require('../models/ressource');
+const {Project} = require('../models/project');
 const oIdValidator = require('../middleware/oIdValidator');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -8,12 +9,8 @@ const router = express.Router();
 
 const populateConfig = [
     {
-        path: 'assigned_users',
-        select: 'first_name surname archived avatar',
-        populate: {
-            path: 'avatar',
-            select: 'url'
-        }
+        path: 'assigned_user',
+        select: 'first_name surname archived'
     },
     {
         path: 'project',
@@ -21,11 +18,7 @@ const populateConfig = [
     },
     {
         path: 'owner',
-        select: 'first_name surname archived avatar',
-        populate: {
-            path: 'avatar',
-            select: 'url'
-        }
+        select: 'first_name surname archived'
     }
 ];
 
@@ -54,11 +47,21 @@ router.post('/', [auth, admin], async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
     let ressource = new Ressource(req.body);
     ressource = await ressource.save();
+
+    // push new ressource into project
+    const ressourceID = ressource._id;
+    const projectID = req.body.project;
+    const project = await Project.findByIdAndUpdate(projectID, {$push: {ressources: ressourceID}});
+    if (!project) {
+        ressource = await Ressource.findByIdAndDelete(ressourceID);
+        return res.status(404).send('The project with the given ID was not found.');
+    }
+
     res.send(ressource);
 });
 
 router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateExisting(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const ressource = await Ressource.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!ressource) return res.status(404).send('The ressource with the given ID was not found.');
@@ -66,7 +69,7 @@ router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
-    const ressource = await Todo.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
+    const ressource = await Ressource.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!ressource) return res.status(404).send('The ressource with the given ID was not found.');
     res.send(ressource);
 });

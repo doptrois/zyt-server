@@ -1,6 +1,8 @@
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const {Expense, validate} = require('../models/expense');
+const {Expense, validate, validateExisting} = require('../models/expense');
+const {Project} = require('../models/project');
+const {Position} = require('../models/position');
 const oIdValidator = require('../middleware/oIdValidator');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -8,12 +10,12 @@ const router = express.Router();
 
 const populateConfig = [
     {
+        path: 'project',
+        select: 'name archived briefing total_time expected start deadline',
+    },
+    {
         path: 'user',
-        select: 'first_name surname archived avatar',
-        populate: {
-            path: 'avatar',
-            select: 'url'
-        }
+        select: 'first_name surname archived'
     }
 ];
 
@@ -65,6 +67,24 @@ router.post('/', [auth], async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
     let expense = new Expense(req.body);
     expense = await expense.save();
+
+    // push new expense into position
+    const expenseID = expense._id;
+
+    const projectID = req.body.project;
+    const project = await Project.findById(projectID);
+    if (!project) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('The project with the given ID was not found.');
+    }
+
+    const positionID = req.body.position;
+    let position = await Position.findByIdAndUpdate(positionID, {$push: {expenses: expenseID}});
+    if (!position) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('The position with the given ID was not found.');
+    }
+
     res.send(expense);
 });
 
@@ -76,7 +96,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
     req.body.user = req.user._id;
 
     // validate user input
-    const { error } = validate(req.body);
+    const { error } = validateExisting(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // check for existing expense

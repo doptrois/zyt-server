@@ -1,6 +1,7 @@
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const {Position, validate} = require('../models/position');
+const {Position, validate, validateExisting} = require('../models/position');
+const {Project} = require('../models/project');
 const oIdValidator = require('../middleware/oIdValidator');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -8,19 +9,15 @@ const router = express.Router();
 
 const populateConfig = [
     {
-        path: 'todos',
-        select: '-owner',
+        path: 'expenses',
         populate: [
             {
-                path: 'expenses',
-                select: 'recorded_time'
+                path: 'project',
+                select: 'name briefing'
             },
             {
-                path: 'assigned_users',
-                select: 'first_name surname archived avatar',
-                populate: {
-                    path: 'avatar'
-                }
+                path: 'user',
+                select: 'first_name surname archived'
             }
         ]
     }
@@ -47,11 +44,21 @@ router.post('/', [auth], async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
     let position = new Position(req.body);
     position = await position.save();
+
+    // push new position into project
+    const positionID = position._id;
+    const projectID = req.body.project;
+    const project = await Project.findByIdAndUpdate(projectID, {$push: {positions: positionID}});
+    if (!project) {
+        position = await Position.findOneAndDelete({_id: positionID});
+        return res.status(500).send('The project with the given ID was not found.');
+    }
+
     res.send(position);
 });
 
 router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateExisting(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const position = await Position.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!position) return res.status(404).send('The position with the given ID was not found.');
