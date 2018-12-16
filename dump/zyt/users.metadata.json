@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"zyt.users"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"zyt.users","background":true}],"uuid":"85bc2d261e104848a0110637fcd7f223"}
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"zyt.users"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"zyt.users","background":true}],"uuid":"018e12046e8c417db2e465c781583fa6"}
