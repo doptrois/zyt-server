@@ -1,9 +1,8 @@
+const express = require('express');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const {Avatar, validate} = require('../models/avatar');
+const { Avatar, validate } = require('../models/avatar');
 const oIdValidator = require('../middleware/oIdValidator');
-const mongoose = require('mongoose');
-const express = require('express');
 const router = express.Router();
 
 router.get('/', [auth], async (req, res) => {
@@ -16,7 +15,7 @@ router.get('/', [auth], async (req, res) => {
 router.get('/:id', [auth, oIdValidator], async (req, res) => {
     const avatar = await Avatar.findById(req.params.id);
     if (!avatar) return res.status(404).send('The avatar with the given ID was not found.');
-    res.send(avatar);
+    return res.send(avatar);
 });
 
 router.post('/', [auth, admin], async (req, res) => {
@@ -26,7 +25,7 @@ router.post('/', [auth, admin], async (req, res) => {
     let avatar = new Avatar(req.body);
     avatar = await avatar.save();
 
-    res.send(avatar);
+    return res.send(avatar);
 });
 
 router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
@@ -36,7 +35,7 @@ router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const avatar = await Avatar.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!avatar) return res.status(404).send('The avatar with the given ID was not found.');
 
-    res.send(avatar);
+    return res.send(avatar);
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
@@ -45,7 +44,7 @@ router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
 
     avatar = await Avatar.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
 
-    res.send(avatar);
+    return res.send(avatar);
 });
 
 module.exports = router;

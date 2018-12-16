@@ -11,7 +11,7 @@ const debug = require('debug')('app:runtime');
 // $ export DEBUG=app:*
 
 // tbd: replace with winston
-module.exports = function(err, req, res, next) {
+module.exports = function error(err, req, res) {
     debug(err);
-    res.status(500).send('Something failed.');
-}
+    return res.status(500).send('Something failed.');
+};

@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "indent": ["error", 4],
+    "no-underscore-dangle": "off",
+    "max-len": "off",
+    "eqeqeq": "off",
+    "import/newline-after-import": "off",
+    "newline-per-chained-call": "off",
+    "no-use-before-define": "off"
+  }
+}

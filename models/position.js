@@ -7,7 +7,7 @@ const PositionSchema = new mongoose.Schema({
     total_time_offered: { type: Number, min: 0, required: true },
     expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Expense' }],
     deadline: { type: Date, default: Date.now },
-    archived: { type: Boolean, default: false }
+    archived: { type: Boolean, default: false },
 });
 
 const Position = mongoose.model('Position', PositionSchema);
@@ -20,7 +20,7 @@ function validatePosition(project) {
         total_time_offered: Joi.number().min(0).required(),
         expenses: Joi.array().items(Joi.objectId()),
         deadline: Joi.date(),
-        archived: Joi.boolean()
+        archived: Joi.boolean(),
     };
     return Joi.validate(project, schema);
 }
@@ -32,7 +32,7 @@ function validateExistingPosition(project) {
         total_time_offered: Joi.number().min(0),
         expenses: Joi.array().items(Joi.objectId()),
         deadline: Joi.date(),
-        archived: Joi.boolean()
+        archived: Joi.boolean(),
     };
     return Joi.validate(project, schema);
 }

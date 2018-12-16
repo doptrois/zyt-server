@@ -1,11 +1,9 @@
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-const {Expense, validate, validateExisting} = require('../models/expense');
-const {Project} = require('../models/project');
-const {Position} = require('../models/position');
-const oIdValidator = require('../middleware/oIdValidator');
-const mongoose = require('mongoose');
 const express = require('express');
+const auth = require('../middleware/auth');
+const { Expense, validate, validateExisting } = require('../models/expense');
+const { Project } = require('../models/project');
+const { Position } = require('../models/position');
+const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
 const populateConfig = [
@@ -15,8 +13,8 @@ const populateConfig = [
     },
     {
         path: 'user',
-        select: 'first_name surname archived'
-    }
+        select: 'first_name surname archived',
+    },
 ];
 
 router.get('/', [auth], async (req, res) => {
@@ -32,16 +30,17 @@ router.get('/', [auth], async (req, res) => {
     if (!req.user.admin) {
         expenses = expenses.filter((expense) => {
             if (expense.user._id == req.user._id) return true;
+            return false;
         });
 
-        if(!expenses.length) return res.status(404).send('No expenses found with your user id.');
+        if (!expenses.length) return res.status(404).send('No expenses found with your user id.');
     }
 
-    res.send(expenses);
+    return res.send(expenses);
 });
 
 router.get('/:id', [auth, oIdValidator], async (req, res) => {
-    let expense = await Expense
+    const expense = await Expense
         .findById(req.params.id)
         .populate(populateConfig);
 
@@ -53,7 +52,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
         if (expense.user._id != req.user._id) return res.status(404).send('Access denied. You are not the owner.');
     }
 
-    res.send(expense);
+    return res.send(expense);
 });
 
 router.post('/', [auth], async (req, res) => {
@@ -79,13 +78,13 @@ router.post('/', [auth], async (req, res) => {
     }
 
     const positionID = req.body.position;
-    let position = await Position.findByIdAndUpdate(positionID, {$push: {expenses: expenseID}});
+    const position = await Position.findByIdAndUpdate(positionID, { $push: { expenses: expenseID } });
     if (!position) {
         expense = await Expense.findByIdAndDelete(expenseID);
         return res.status(404).send('The position with the given ID was not found.');
     }
 
-    res.send(expense);
+    return res.send(expense);
 });
 
 router.put('/:id', [auth, oIdValidator], async (req, res) => {
@@ -108,7 +107,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
 
     // update db
     expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.send(expense);
+    return res.send(expense);
 });
 
 router.delete('/:id', [auth, oIdValidator], async (req, res) => {
@@ -119,7 +118,7 @@ router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     if (expense.user != req.user._id) return res.status(403).send('Access denied. You are not the owner.');
 
     expense = await Expense.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
-    res.send(expense);
+    return res.send(expense);
 });
 
 module.exports = router;

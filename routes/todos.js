@@ -1,20 +1,19 @@
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-const {Todo, validate, validateExisting} = require('../models/todo');
-const oIdValidator = require('../middleware/oIdValidator');
-const mongoose = require('mongoose');
 const express = require('express');
+const auth = require('../middleware/auth');
+const { Todo, validate, validateExisting } = require('../models/todo');
+const { Project } = require('../models/project');
+const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
 const populateConfig = [
     {
         path: 'project',
-        select: 'name briefing start deadline'
+        select: 'name briefing start deadline',
     },
     {
         path: 'assigned_users',
-        select: 'first_name surname archived'
-    }
+        select: 'first_name surname archived',
+    },
 ];
 
 router.get('/', [auth], async (req, res) => {
@@ -26,7 +25,7 @@ router.get('/', [auth], async (req, res) => {
 
     if (!todos) return res.status(404).send('No todos found.');
 
-    res.send(todos);
+    return res.send(todos);
 });
 
 router.get('/:id', [auth, oIdValidator], async (req, res) => {
@@ -34,7 +33,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
         .findById(req.params.id)
         .populate(populateConfig);
     if (!todo) return res.status(404).send('The todo with the given ID was not found.');
-    res.send(todo);
+    return res.send(todo);
 });
 
 router.post('/', [auth], async (req, res) => {
@@ -46,27 +45,28 @@ router.post('/', [auth], async (req, res) => {
     // push new todo into project
     const todoID = todo._id;
     const projectID = req.body.project;
-    const project = await Project.findByIdAndUpdate(projectID, {$push: {todos: positionID}});
+    const project = await Project.findByIdAndUpdate(projectID, { $push: { todos: todoID } });
     if (!project) {
-        todo = await ToDo.findByIdAndDelete(todoID);
+        todo = await Todo.findByIdAndDelete(todoID);
         return res.status(404).send('The project with the given ID was not found.');
     }
 
-    res.send(todo);
+    return res.send(todo);
 });
 
 router.put('/:id', [auth, oIdValidator], async (req, res) => {
     const { error } = validateExisting(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+
     const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!todo) return res.status(404).send('The todo with the given ID was not found.');
-    res.send(todo);
+    return res.send(todo);
 });
 
 router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     const todo = await Todo.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!todo) return res.status(404).send('The todo with the given ID was not found.');
-    res.send(todo);
+    return res.send(todo);
 });
 
 module.exports = router;

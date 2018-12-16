@@ -7,8 +7,8 @@ const projectSchema = new mongoose.Schema({
     briefing: {
         type: {
             title: { type: String, required: true, trim: true },
-            description: { type: String, required: true, trim: true }
-        }
+            description: { type: String, required: true, trim: true },
+        },
     },
     project_managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     ressources: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ressource' }],
@@ -18,7 +18,7 @@ const projectSchema = new mongoose.Schema({
     start: { type: Date, default: Date.now },
     deadline: { type: Date, default: Date.now },
     total_time_offered: { type: Number, min: 0, required: true },
-    archived: { type: Boolean, default: false }
+    archived: { type: Boolean, default: false },
 });
 
 const Project = mongoose.model('Project', projectSchema);
@@ -29,7 +29,7 @@ function validateProject(project) {
         name: Joi.string().required(),
         briefing: Joi.object({
             title: Joi.string().required(),
-            description: Joi.string().required()
+            description: Joi.string().required(),
         }).required(),
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
@@ -39,7 +39,7 @@ function validateProject(project) {
         start: Joi.date(),
         deadline: Joi.date(),
         total_time_offered: Joi.number().min(0).required(),
-        archived: Joi.boolean()
+        archived: Joi.boolean(),
     };
     return Joi.validate(project, schema);
 }
@@ -49,7 +49,7 @@ function validateExistingProject(project) {
         name: Joi.string(),
         briefing: Joi.object({
             title: Joi.string(),
-            description: Joi.string()
+            description: Joi.string(),
         }),
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
@@ -59,7 +59,7 @@ function validateExistingProject(project) {
         start: Joi.date(),
         deadline: Joi.date(),
         total_time_offered: Joi.number().min(0),
-        archived: Joi.boolean()
+        archived: Joi.boolean(),
     };
     return Joi.validate(project, schema);
 }

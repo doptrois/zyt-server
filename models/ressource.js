@@ -9,7 +9,7 @@ const ressourceSchema = new mongoose.Schema({
     stop: { type: Date, default: Date.now, required: true },
     total_time_expected: { type: Number, min: 0, required: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    archived: { type: Boolean, default: false }
+    archived: { type: Boolean, default: false },
 });
 
 const Ressource = mongoose.model('Ressource', ressourceSchema);
@@ -23,7 +23,7 @@ function validateRessource(ressource) {
         stop: Joi.date(),
         total_time_expected: Joi.number().min(0).required(),
         owner: Joi.objectId().required(),
-        archived: Joi.boolean()
+        archived: Joi.boolean(),
     };
     return Joi.validate(ressource, schema);
 }
@@ -36,11 +36,10 @@ function validateExistingRessource(ressource) {
         stop: Joi.date(),
         total_time_expected: Joi.number().min(0),
         owner: Joi.objectId(),
-        archived: Joi.boolean()
+        archived: Joi.boolean(),
     };
     return Joi.validate(ressource, schema);
 }
-
 
 exports.Ressource = Ressource;
 exports.validate = validateRessource;

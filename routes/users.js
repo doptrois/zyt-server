@@ -1,20 +1,17 @@
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-const jwt = require('jsonwebtoken');
-const config = require('config');
+const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
-const {User, validate, validateExisting} = require('../models/user');
+const admin = require('../middleware/admin');
+const auth = require('../middleware/auth');
+const { User, validate, validateExisting } = require('../models/user');
 const oIdValidator = require('../middleware/oIdValidator');
-const mongoose = require('mongoose');
-const express = require('express');
 const router = express.Router();
 
 const populateConfig = [
     {
         path: 'avatar',
-        select: 'url'
-    }
+        select: 'url',
+    },
 ];
 
 const dbSelectProperties = 'admin first_name surname email archived avatar';
@@ -32,7 +29,7 @@ router.get('/me', [auth], async (req, res) => {
         .findById(req.user._id)
         .select(dbSelectProperties)
         .populate(populateConfig);
-    res.send(users);
+    return res.send(users);
 });
 
 router.get('/:id', [auth, admin, oIdValidator], async (req, res) => {
@@ -41,20 +38,24 @@ router.get('/:id', [auth, admin, oIdValidator], async (req, res) => {
         .select(dbSelectProperties)
         .populate(populateConfig);
     if (!user) return res.status(404).send('The user with the given ID was not found.');
-    res.send(user);
+    return res.send(user);
 });
 
 router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send('User alread registered');
     user = new User(_.pick(req.body, ['first_name', 'surname', 'email', 'avatar', 'password']));
+
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
+
     user = await user.save();
     const token = user.generateAuthToken();
-    res.header('x-auth-token', token).send(_.pick(req.body, ['_id', 'first_name', 'surname', 'email', 'avatar']));
+
+    return res.header('x-auth-token', token).send(_.pick(req.body, ['_id', 'first_name', 'surname', 'email', 'avatar']));
 });
 
 router.put('/:id', [auth, oIdValidator], async (req, res) => {
@@ -84,9 +85,9 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
-    let user = await User.findByIdAndUpdate(req.params.id, { archived: true });
+    const user = await User.findByIdAndUpdate(req.params.id, { archived: true });
     if (!user) return res.status(404).send('The user with the given ID was not found.');
-    res.send(user);
+    return res.send(user);
 });
 
 module.exports = router;
