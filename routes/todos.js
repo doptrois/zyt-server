@@ -7,10 +7,6 @@ const router = express.Router();
 
 const populateConfig = [
     {
-        path: 'project',
-        select: 'name briefing start deadline',
-    },
-    {
         path: 'assigned_users',
         select: 'first_name surname archived',
     },
