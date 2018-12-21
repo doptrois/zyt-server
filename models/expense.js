@@ -42,5 +42,6 @@ function validateExistingExpense(expense) {
 }
 
 exports.Expense = Expense;
+exports.ExpenseSchema = ExpenseSchema;
 exports.validate = validateExpense;
 exports.validateExisting = validateExistingExpense;

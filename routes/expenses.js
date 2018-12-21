@@ -67,23 +67,12 @@ router.post('/', [auth], async (req, res) => {
     let expense = new Expense(req.body);
     expense = await expense.save();
 
-    // push new expense into position
+    // push new expense into project
     const expenseID = expense._id;
 
     const projectID = req.body.project;
-    const project = await Project.findById(projectID);
-    if (!project) {
-        expense = await Expense.findByIdAndDelete(expenseID);
-        return res.status(404).send('The project with the given ID was not found.');
-    }
-
-    const positionID = req.body.position;
-    const position = await Position.findByIdAndUpdate(positionID, { $push: { expenses: expenseID } });
-    if (!position) {
-        expense = await Expense.findByIdAndDelete(expenseID);
-        return res.status(404).send('The position with the given ID was not found.');
-    }
-
+    const project = await Project.findByIdAndUpdate(projectID, { $push: { expenses: expenseID } });
+    if (!project) return res.status(404).send('Project not found');
     return res.send(expense);
 });
 
