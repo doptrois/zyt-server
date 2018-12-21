@@ -1,7 +1,7 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
-const { Position, PositionSchema } = require('./position');
+const { PositionSchema } = require('./position');
 
 const projectSchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true },
