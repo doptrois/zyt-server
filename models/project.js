@@ -1,6 +1,7 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
+const { Position, PositionSchema } = require('./position');
 
 const projectSchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true },
@@ -12,7 +13,7 @@ const projectSchema = new mongoose.Schema({
     },
     project_managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     ressources: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ressource' }],
-    positions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Position' }],
+    positions: [{ type: PositionSchema, ref: 'Position' }],
     todos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Todo' }],
     assigned_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     start: { type: Date, default: Date.now },
@@ -33,7 +34,7 @@ function validateProject(project) {
         }).required(),
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
-        positions: Joi.array().items(Joi.objectId()),
+        positions: Joi.array().items(Joi.object()),
         todos: Joi.array().items(Joi.objectId()),
         assigned_users: Joi.array().items(Joi.objectId()),
         start: Joi.date(),
@@ -53,7 +54,7 @@ function validateExistingProject(project) {
         }),
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
-        positions: Joi.array().items(Joi.objectId()),
+        positions: Joi.array().items(Joi.object()),
         todos: Joi.array().items(Joi.objectId()),
         assigned_users: Joi.array().items(Joi.objectId()),
         start: Joi.date(),

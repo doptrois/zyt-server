@@ -38,5 +38,6 @@ function validateExistingPosition(project) {
 }
 
 exports.Position = Position;
+exports.PositionSchema = PositionSchema;
 exports.validate = validatePosition;
 exports.validateExisting = validateExistingPosition;
