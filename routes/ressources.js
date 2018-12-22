@@ -22,12 +22,26 @@ const populateConfig = [
 ];
 
 router.get('/', [auth], async (req, res) => {
-    const ressources = await Ressource
+    let ressources = await Ressource
         .find()
         .populate(populateConfig)
         .sort('start');
 
     if (!ressources) return res.status(404).send('No ressources found.');
+
+    // return only ressources that are assigned to the user,
+    // if user is not admin
+    if (!req.user.admin) {
+        ressources = ressources.filter((ressource) => {
+            if (
+                ressource.assigned_user._id == req.user._id
+            ) {
+                return true;
+            }
+            return false;
+        });
+        if (!ressources.length) return res.status(404).send('No ressource found. You are not assigned to any ressources.');
+    }
 
     return res.send(ressources);
 });
