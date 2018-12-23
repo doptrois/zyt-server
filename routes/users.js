@@ -17,11 +17,24 @@ const populateConfig = [
 const dbSelectProperties = 'admin first_name surname email archived avatar';
 
 router.get('/', [auth], async (req, res) => {
-    const users = await User
+    let users = await User
         .find()
         .select(dbSelectProperties)
         .populate(populateConfig);
-    res.send(users);
+
+    // return only projects that are assigned to the user,
+    // if user is not admin
+    if (!req.user.admin) {
+        users = users.filter((user) => {
+            if (user._id == req.user._id) {
+                return true;
+            }
+            return false;
+        });
+        if (!users.length) return res.status(404).send('You were not found.');
+    }
+
+    return res.send(users);
 });
 
 router.get('/me', [auth], async (req, res) => {
