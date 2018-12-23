@@ -2,7 +2,6 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const { Expense, validate, validateExisting } = require('../models/expense');
 const { Project } = require('../models/project');
-const { Position } = require('../models/position');
 const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
