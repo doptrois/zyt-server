@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/doptrois/zyt-server#readme",
   "dependencies": {
-    "bcrypt": "^3.0.2",
+    "bcrypt": "^3.0.3",
     "config": "^2.0.1",
     "cors": "^2.8.5",
     "debug": "^4.1.0",
