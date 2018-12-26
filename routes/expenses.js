@@ -2,7 +2,6 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const { Expense, validate, validateExisting } = require('../models/expense');
 const { Project } = require('../models/project');
-const { Position } = require('../models/position');
 const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
@@ -34,6 +33,51 @@ router.get('/', [auth], async (req, res) => {
         });
 
         if (!expenses.length) return res.status(404).send('No expenses found with your user id.');
+    }
+
+    return res.send(expenses);
+});
+
+router.get('/week', [auth], async (req, res) => {
+    let expenses = await Expense
+        .find()
+        .populate(populateConfig)
+        .sort('affected_date');
+
+    if (!expenses) return res.status(404).send('No expenses found.');
+
+    // return only projects that are assigned to the user,
+    // if user is not admin
+    if (!req.user.admin) {
+        expenses = expenses.filter((expense) => {
+            if (expense.user._id == req.user._id) return true;
+            return false;
+        });
+
+        if (!expenses.length) return res.status(404).send('No expenses found with your user id.');
+    }
+
+    // Filter by week
+    const curr = new Date();
+    let first = curr.getDate() - curr.getDay();
+    first += 1;
+    const last = first + 6;
+
+    const mon = new Date(curr.setDate(first));
+    const sun = new Date(curr.setDate(last));
+
+    expenses = expenses.filter((expense) => {
+        const date = new Date(expense.affected_date);
+        return (date >= mon && date <= sun);
+    });
+
+    if (!expenses.length) {
+        const humanDateMondayLong = mon.toLocaleDateString('de-DE', { weekday: 'long' }).toUpperCase();
+        const humanDateSundayLong = sun.toLocaleDateString('de-DE', { weekday: 'long' }).toUpperCase();
+
+        const humanDateMonday = `${humanDateMondayLong} ${(mon.getDate())}.${(mon.getMonth() + 1)}.${(mon.getFullYear())}`;
+        const humanDateSunday = `${humanDateSundayLong} ${(sun.getDate())}.${(sun.getMonth() + 1)}.${(sun.getFullYear())}`;
+        return res.status(404).send(`No expenses found for the week from ${humanDateMonday} to ${humanDateSunday}.`);
     }
 
     return res.send(expenses);
