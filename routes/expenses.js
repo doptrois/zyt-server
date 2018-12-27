@@ -15,6 +15,10 @@ const populateConfig = [
         path: 'user',
         select: 'first_name surname archived',
     },
+    {
+        path: 'position',
+        select: '-expenses'
+    }
 ];
 
 router.get('/', [auth], async (req, res) => {
@@ -73,6 +77,11 @@ router.post('/', [auth], async (req, res) => {
     const projectID = req.body.project;
     const project = await Project.findByIdAndUpdate(projectID, { $push: { expenses: expenseID } });
     if (!project) return res.status(404).send('Project not found');
+
+    const positionID = req.body.position;
+    const position = await Position.findByIdAndUpdate(positionID, { $push: { expenses: expenseID } });
+    if (!position) return res.status(404).send('The position with the given ID not found');
+
     return res.send(expense);
 });
 
