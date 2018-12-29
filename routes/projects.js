@@ -36,6 +36,10 @@ const populateConfig = [
         ],
     },
     {
+        path: 'expenses',
+        
+    },
+    {
         path: 'assigned_users',
         select: 'first_name surname archived',
         populate: {

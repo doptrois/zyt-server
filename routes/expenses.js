@@ -15,6 +15,9 @@ const populateConfig = [
         path: 'user',
         select: 'first_name surname archived',
     },
+    {
+        path: 'positions'
+    }
 ];
 
 router.get('/', [auth], async (req, res) => {
