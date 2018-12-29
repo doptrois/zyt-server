@@ -13,7 +13,7 @@ const projectSchema = new mongoose.Schema({
     },
     project_managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     ressources: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ressource' }],
-    positions: [{ type: PositionSchema, ref: 'Position' }],
+    positions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Position' }],
     expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Expense' }],
     todos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Todo' }],
     assigned_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
@@ -35,7 +35,13 @@ function validateProject(project) {
         }).required(),
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
-        positions: Joi.array().items(Joi.object()),
+        positions: Joi.array().items(Joi.object({
+                name: Joi.string().required(),
+                total_time_offered: Joi.number().min(0).required(),
+                deadline: Joi.date(),
+                archived: Joi.boolean(),
+            })
+        ),
         expenses: Joi.array().items(Joi.objectId()),
         todos: Joi.array().items(Joi.objectId()),
         assigned_users: Joi.array().items(Joi.objectId()),
@@ -56,7 +62,13 @@ function validateExistingProject(project) {
         }),
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
-        positions: Joi.array().items(Joi.object()),
+        positions: Joi.array().items(Joi.object({
+                name: Joi.string(),
+                total_time_offered: Joi.number().min(0),
+                deadline: Joi.date(),
+                archived: Joi.boolean(),
+            })
+        ),
         expenses: Joi.array().items(Joi.objectId()),
         todos: Joi.array().items(Joi.objectId()),
         assigned_users: Joi.array().items(Joi.objectId()),

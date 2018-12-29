@@ -2,6 +2,7 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const { Project, validate, validateExisting } = require('../models/project');
+const { Position, validatePositionOnProjectCreation } = require('../models/position');
 const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
@@ -57,6 +58,9 @@ const populateConfig = [
             },
         ],
     },
+    {
+        path: 'expenses'
+    },
 ];
 
 router.get('/', [auth], async (req, res) => {
@@ -110,9 +114,22 @@ router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    const positions = req.body.positions;
+    delete req.body.positions;
+
     let project = new Project(req.body);
     project = await project.save();
-    return res.send(project);
+    const projectID = project._id;
+
+    positions.forEach(async (pos) => {
+        let position = new Position(pos);
+        position = await position.save();
+        positionID = position._id;
+
+        project = await Project.findByIdAndUpdate(projectID, { $push: { positions: positionID } });
+    });
+
+    return res.send(`Project with id ${project._id} created.`);
 });
 
 router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
