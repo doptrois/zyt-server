@@ -126,6 +126,7 @@ router.post('/', [auth], async (req, res) => {
         return res.status(404).send('Project not found');
     }
 
+    // push new expense into position
     const positionID = req.body.position;
     const position = await Position.findByIdAndUpdate(positionID, { $push: { expenses: expenseID } });
     if (!position) {
