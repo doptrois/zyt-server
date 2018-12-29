@@ -13,7 +13,7 @@ const PositionSchema = new mongoose.Schema({
 const Position = mongoose.model('Position', PositionSchema);
 
 // User input validation
-function validatePosition(project) {
+function validatePosition(position) {
     const schema = {
         name: Joi.string().required(),
         project: Joi.objectId().required(),
@@ -22,10 +22,20 @@ function validatePosition(project) {
         deadline: Joi.date(),
         archived: Joi.boolean(),
     };
-    return Joi.validate(project, schema);
+    return Joi.validate(position, schema);
 }
 
-function validateExistingPosition(project) {
+function validatePositionOnProjectCreation(position) {
+    const schema = {
+        name: Joi.string().required(),
+        total_time_offered: Joi.number().min(0).required(),
+        deadline: Joi.date(),
+        archived: Joi.boolean(),
+    };
+    return Joi.validate(position, schema);
+}
+
+function validateExistingPosition(position) {
     const schema = {
         name: Joi.string(),
         project: Joi.objectId(),
@@ -34,10 +44,11 @@ function validateExistingPosition(project) {
         deadline: Joi.date(),
         archived: Joi.boolean(),
     };
-    return Joi.validate(project, schema);
+    return Joi.validate(position, schema);
 }
 
 exports.Position = Position;
 exports.PositionSchema = PositionSchema;
 exports.validate = validatePosition;
 exports.validateExisting = validateExistingPosition;
+exports.validatePositionOnProjectCreation = validatePositionOnProjectCreation;
