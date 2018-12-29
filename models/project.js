@@ -1,7 +1,6 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
-const { PositionSchema } = require('./position');
 
 const projectSchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true },
@@ -36,12 +35,11 @@ function validateProject(project) {
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
         positions: Joi.array().items(Joi.object({
-                name: Joi.string().required(),
-                total_time_offered: Joi.number().min(0).required(),
-                deadline: Joi.date(),
-                archived: Joi.boolean(),
-            })
-        ),
+            name: Joi.string().required(),
+            total_time_offered: Joi.number().min(0).required(),
+            deadline: Joi.date(),
+            archived: Joi.boolean(),
+        })),
         expenses: Joi.array().items(Joi.objectId()),
         todos: Joi.array().items(Joi.objectId()),
         assigned_users: Joi.array().items(Joi.objectId()),
@@ -63,12 +61,11 @@ function validateExistingProject(project) {
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
         positions: Joi.array().items(Joi.object({
-                name: Joi.string(),
-                total_time_offered: Joi.number().min(0),
-                deadline: Joi.date(),
-                archived: Joi.boolean(),
-            })
-        ),
+            name: Joi.string(),
+            total_time_offered: Joi.number().min(0),
+            deadline: Joi.date(),
+            archived: Joi.boolean(),
+        })),
         expenses: Joi.array().items(Joi.objectId()),
         todos: Joi.array().items(Joi.objectId()),
         assigned_users: Joi.array().items(Joi.objectId()),

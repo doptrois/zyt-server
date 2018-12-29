@@ -2,7 +2,7 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const { Project, validate, validateExisting } = require('../models/project');
-const { Position, validatePositionOnProjectCreation } = require('../models/position');
+const { Position } = require('../models/position');
 const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
@@ -55,7 +55,7 @@ const populateConfig = [
         ],
     },
     {
-        path: 'expenses'
+        path: 'expenses',
     },
 ];
 
@@ -110,7 +110,7 @@ router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const positions = req.body.positions;
+    const { positions } = req.body;
     delete req.body.positions;
 
     let project = new Project(req.body);
@@ -120,7 +120,7 @@ router.post('/', [auth, admin], async (req, res) => {
     positions.forEach(async (pos) => {
         let position = new Position(pos);
         position = await position.save();
-        positionID = position._id;
+        const positionID = position._id;
 
         project = await Project.findByIdAndUpdate(projectID, { $push: { positions: positionID } });
     });

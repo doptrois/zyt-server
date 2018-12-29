@@ -90,11 +90,10 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
         user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(populateConfig);
 
         const token = user.generateAuthToken();
-        res.header('x-auth-token', token).send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
-    } else {
-        user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(populateConfig);
-        res.send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
+        return res.header('x-auth-token', token).send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
     }
+    user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(populateConfig);
+    return res.send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
