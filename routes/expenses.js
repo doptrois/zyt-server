@@ -121,11 +121,17 @@ router.post('/', [auth], async (req, res) => {
 
     const projectID = req.body.project;
     const project = await Project.findByIdAndUpdate(projectID, { $push: { expenses: expenseID } });
-    if (!project) return res.status(404).send('Project not found');
+    if (!project) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('Project not found');
+    }
 
     const positionID = req.body.position;
     const position = await Position.findByIdAndUpdate(positionID, { $push: { expenses: expenseID } });
-    if (!position) return res.status(404).send('The position with the given ID not found');
+    if (!position) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('The position with the given ID not found');
+    }
 
     return res.send(expense);
 });
