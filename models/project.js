@@ -53,11 +53,11 @@ function validateProject(project) {
 
 function validateExistingProject(project) {
     const schema = {
-        name: Joi.string(),
+        name: Joi.string().required(),
         briefing: Joi.object({
-            title: Joi.string(),
-            description: Joi.string(),
-        }),
+            title: Joi.string().required(),
+            description: Joi.string().required(),
+        }).required(),
         project_managers: Joi.array().items(Joi.objectId()),
         ressources: Joi.array().items(Joi.objectId()),
         positions: Joi.array().items(Joi.object({
