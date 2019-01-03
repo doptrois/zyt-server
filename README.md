@@ -1,17 +1,33 @@
 # zyt-server
 The server repo for the web application zyt -> https://github.com/vschefer/zyt
 
-## Basic startup instruction (for now)
- 1. run ```npm i```
- 2. Install mongodb locally (not with npm)
- 3. run ```mongod``` to start the daemon
- 4. run ```export zyt_jwtPrivateKey=ANY_VALUE_YOU_WANT```
- 5. run ```node index.js```
+## Basic startup instruction
+  1. Clone this project
+  2. ```cd``` into the project root folder.
+  3. run ```npm i```
+  4. Install *mongodb* locally (not with npm)
+  5. run ```mongod``` or ```sudo service mongod start``` to start the daemon
+  6. run ```export zyt_jwtPrivateKey=ANY_VALUE_YOU_WANT```. *We used to execute ```export zyt_jwtPrivateKey=DevMachine```*
+  7. run ```node index.js``` or ```export DEBUG=app:runtime && nodemon index.js``` to see debugging informations in the console.
 
-## Hints
+## MongoDB Compass
 
-### MongoDB Compass
+1. Install MongoDB Compass: https://www.mongodb.com/products/compass
+2. Start the program.
+3. Leave the default values and press *connect*.
 
-MongoDB Compass is a GUI's for MongoDB. https://www.mongodb.com/products/compass
+## Demo Users
 
-Leave the default values as is and press *connect*.
+| Admins                                                       | Employees                                                    |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| vanessa.schefer@domain.tld<br />michael.fischer@domain.tld<br/> | maximilian.mueller@domain.tld<br />hansruedi.mustermann@domain.tld<br />adrian.musterbergen@domain.tld |
+
+Password for all users: ```zytApp2018!```
+
+## Postman API Documentation
+
+https://documenter.getpostman.com/view/5816654/RznCqzWF
+
+## Automated tests
+
+*tbd*
