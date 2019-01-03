@@ -72,6 +72,12 @@ router.get('/week', [auth], async (req, res) => {
     const mon = new Date(curr.setDate(first));
     const sun = new Date(curr.setDate(last));
 
+    const currentYear = new Date();
+
+    if (mon.getFullYear() < currentYear.getFullYear()) {
+        sun.setFullYear(currentYear.getFullYear());
+    }
+
     expenses = expenses.filter((expense) => {
         const date = new Date(expense.affected_date);
         return (date >= mon && date <= sun);
