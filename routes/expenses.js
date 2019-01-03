@@ -3,6 +3,7 @@ const auth = require('../middleware/auth');
 const { Expense, validate, validateExisting } = require('../models/expense');
 const { Project } = require('../models/project');
 const { Position } = require('../models/position');
+const { User } = require('../models/user');
 const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
@@ -124,6 +125,13 @@ router.post('/', [auth], async (req, res) => {
     if (!project) {
         expense = await Expense.findByIdAndDelete(expenseID);
         return res.status(404).send('Project not found');
+    }
+
+    // push new expense into user
+    const user = await User.findByIdAndUpdate(req.body.user, { $push: { expenses: expenseID } });
+    if (!user) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('User not found');
     }
 
     // push new expense into position
