@@ -1,11 +1,12 @@
 const cors = require('cors');
 const debug = require('debug')('app:runtime');
 require('express-async-errors');
-const error = require('./middleware/error');
+const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const config = require('config');
 const mongoose = require('mongoose');
+const error = require('./middleware/error');
 const projects = require('./routes/projects');
 const positions = require('./routes/positions');
 const todos = require('./routes/todos');
@@ -14,7 +15,6 @@ const avatars = require('./routes/avatars');
 const users = require('./routes/users');
 const ressources = require('./routes/ressources');
 const auth = require('./routes/auth');
-const express = require('express');
 const app = express();
 
 process.on('uncaughtException', (ex) => {
@@ -38,24 +38,9 @@ mongoose.connect('mongodb://localhost/zyt',
 
 app.use(helmet());
 
-// To change environment
-// $ export NODE_ENV=production
-// $ export NODE_ENV=development
-// if nothing is set previously, the environment is 'development' by default.
 if (app.get('env') === 'development') {
     app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 }
-// To get the configuration for the current environment:
-// config.get('name')
-// config.get('example.key-one')
-// config.get('example.key-one')
-// the file names 'development' and 'production' corresponds to the defined environment
-// that was set by 'export NODE_ENV=XYZ' in the terminal.
-
-// Custom environment variables
-// $ export zyt_mailServerHost=1234
-// declare/map in: config/custom-environment-variables.json
-// usage: config.get('mail.host')
 
 app.use(cors());
 app.options('*', cors());
