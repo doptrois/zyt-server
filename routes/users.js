@@ -42,6 +42,7 @@ router.get('/me', [auth], async (req, res) => {
         .findById(req.user._id)
         .select(dbSelectProperties)
         .populate(populateConfig);
+
     return res.send(users);
 });
 
@@ -51,6 +52,7 @@ router.get('/:id', [auth, admin, oIdValidator], async (req, res) => {
         .select(dbSelectProperties)
         .populate(populateConfig);
     if (!user) return res.status(404).send('The user with the given ID was not found.');
+
     return res.send(user);
 });
 
@@ -93,12 +95,14 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
         return res.header('x-auth-token', token).send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
     }
     user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(populateConfig);
+
     return res.send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, { archived: true });
     if (!user) return res.status(404).send('The user with the given ID was not found.');
+
     return res.send(user);
 });
 

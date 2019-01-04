@@ -15,6 +15,7 @@ router.get('/', [auth], async (req, res) => {
 router.get('/:id', [auth, oIdValidator], async (req, res) => {
     const avatar = await Avatar.findById(req.params.id);
     if (!avatar) return res.status(404).send('The avatar with the given ID was not found.');
+
     return res.send(avatar);
 });
 

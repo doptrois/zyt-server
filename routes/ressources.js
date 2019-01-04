@@ -86,6 +86,7 @@ router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const ressource = await Ressource.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!ressource) return res.status(404).send('The ressource with the given ID was not found.');
+
     return res.send(ressource);
 });
 

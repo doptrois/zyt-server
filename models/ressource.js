@@ -3,13 +3,40 @@ Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const ressourceSchema = new mongoose.Schema({
-    project: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Project' },
-    assigned_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    start: { type: Date, default: Date.now, required: true },
-    stop: { type: Date, default: Date.now, required: true },
-    total_time_expected: { type: Number, min: 0, required: true },
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    archived: { type: Boolean, default: false },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+        required: true,
+    },
+    assigned_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    start: {
+        type: Date,
+        default: Date.now,
+        required: true,
+    },
+    stop: {
+        type: Date,
+        default: Date.now,
+        required: true,
+    },
+    total_time_expected: {
+        type: Number,
+        min: 0,
+        required: true,
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Ressource = mongoose.model('Ressource', ressourceSchema);

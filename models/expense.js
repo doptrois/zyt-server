@@ -3,13 +3,38 @@ Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const ExpenseSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
-    position: { type: mongoose.Schema.Types.ObjectId, ref: 'Position', required: true },
-    recorded_time: { type: Number, min: 0, required: true },
-    affected_date: { type: Date, default: Date.now },
-    comment: { type: String, required: true },
-    archived: { type: Boolean, default: false },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+        required: true,
+    },
+    position: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Position',
+        required: true,
+    },
+    recorded_time: {
+        type: Number,
+        min: 0,
+        required: true,
+    },
+    affected_date: {
+        type: Date,
+        default: Date.now,
+    },
+    comment: {
+        type: String,
+        required: true,
+    },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Expense = mongoose.model('Expense', ExpenseSchema);

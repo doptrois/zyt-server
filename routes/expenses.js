@@ -171,6 +171,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
 
     // update db
     expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
     return res.send(expense);
 });
 
@@ -182,6 +183,7 @@ router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     if (expense.user != req.user._id) return res.status(403).send('Access denied. You are not the owner.');
 
     expense = await Expense.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
+
     return res.send(expense);
 });
 
