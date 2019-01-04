@@ -40,8 +40,9 @@ router.get('/', [auth], async (req, res) => {
             }
             return false;
         });
-        if (!ressources.length) return res.status(404).send('No ressource found. You are not assigned to any ressources.');
+        if (!ressources.length) return res.status(404).send('No ressources found. You are not assigned to any ressources.');
     }
+    if (!ressources.length) return res.status(404).send('No ressources found.');
 
     return res.send(ressources);
 });
