@@ -28,6 +28,13 @@ Password for all users: ```zytApp2018!```
 
 https://documenter.getpostman.com/view/5816654/RznCqzWF
 
+### Hint
+ 1. Install the Postman app on your device.
+ 2. Click on the provided API documentation link.
+ 3. On the documentation page, click on "Run in Postman", at the right top and import the data into your app.
+
+Testing the API manually is now more comfortable.
+
 ## Automated tests
 
 *tbd*
