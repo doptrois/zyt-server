@@ -37,4 +37,4 @@ Testing the API manually is now more comfortable.
 
 ## Automated tests
 
-*tbd*
+Run ```npm test```
