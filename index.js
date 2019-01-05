@@ -26,14 +26,14 @@ if (!config.get('jwtPrivateKey')) {
     process.exit(1);
 }
 
-mongoose.connect('mongodb://localhost/zyt',
+mongoose.connect(config.get('db'),
     {
         // https://github.com/Automattic/mongoose/issues/6890
         useCreateIndex: true,
         // https://stackoverflow.com/questions/50448272/avoid-current-url-string-parser-is-deprecated-warning-by-setting-usenewurlpars
         useNewUrlParser: true
     })
-    .then(() => console.log('Connected to MongoDB...'))
+    .then(() => console.log(`Connected to MongoDB ${config.get('db')}...`))
     .catch(err => console.error('Could not connect to MongoDB...'));
 
 app.use(helmet());
@@ -56,4 +56,6 @@ app.use('/api/auth', auth);
 app.use(error);
 
 const port = process.env.PORT || 9000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+const server = app.listen(port, () => console.log(`Listening on port ${port}...`));
+
+module.exports = server;
