@@ -7,6 +7,7 @@ The server repo for the web application zyt -> https://github.com/vschefer/zyt
   3. run ```npm i```
   4. Install *mongodb* locally (not with npm)
   5. run ```mongod``` or ```sudo service mongod start``` to start the daemon
+  6. To import the database dump run ```mongorestore --drop```
   6. run ```export zyt_jwtPrivateKey=ANY_VALUE_YOU_WANT```. *We used to execute ```export zyt_jwtPrivateKey=DevMachine```*
   7. run ```node index.js``` or ```export DEBUG=app:runtime && nodemon index.js``` to see debugging informations in the console.
 
