@@ -4,7 +4,7 @@ const debug = require('debug')('app:runtime');
 
 module.exports = function database() {
     const db = config.get('db');
-    mongoose.connect(config.get('db'),
+    mongoose.connect(db,
         {
             useCreateIndex: true,
             useNewUrlParser: true,
