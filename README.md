@@ -37,5 +37,5 @@ https://documenter.getpostman.com/view/5816654/RznCqzWF
 Testing the API manually is now more comfortable.
 
 ## Automated tests
-
-Run ```npm test```
+1. Stop the node server, that was started via ```node index.js``` or ```nodemon index.js``` etc.
+2. Run ```npm test```
