@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 const AvatarSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
         trim: true,
+        required: true,
     },
     url: {
         type: String,

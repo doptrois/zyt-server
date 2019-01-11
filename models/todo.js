@@ -3,16 +3,38 @@ Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const todoSchema = new mongoose.Schema({
-    project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+        required: true,
+    },
     briefing: {
         type: {
-            title: { type: String, required: true, trim: true },
-            description: { type: String, required: true, trim: true },
+            title: {
+                type: String,
+                trim: true,
+                required: true,
+            },
+            description: {
+                type: String,
+                trim: true,
+                required: true,
+            },
         },
     },
-    archived: { type: Boolean, default: false },
-    assigned_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    status: { type: Number, enum: [0, 1, 2, 3], default: 0 },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
+    assigned_users: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    status: {
+        type: Number,
+        enum: [0, 1, 2, 3],
+        default: 0,
+    },
 });
 
 const Todo = mongoose.model('Todo', todoSchema);

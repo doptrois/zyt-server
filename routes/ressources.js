@@ -40,8 +40,9 @@ router.get('/', [auth], async (req, res) => {
             }
             return false;
         });
-        if (!ressources.length) return res.status(404).send('No ressource found. You are not assigned to any ressources.');
+        if (!ressources.length) return res.status(404).send('No ressources found. You are not assigned to any ressources.');
     }
+    if (!ressources.length) return res.status(404).send('No ressources found.');
 
     return res.send(ressources);
 });
@@ -85,6 +86,7 @@ router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const ressource = await Ressource.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!ressource) return res.status(404).send('The ressource with the given ID was not found.');
+
     return res.send(ressource);
 });
 
