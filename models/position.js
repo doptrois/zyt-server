@@ -3,11 +3,28 @@ Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const PositionSchema = new mongoose.Schema({
-    name: { type: String, required: true, trim: true },
-    total_time_offered: { type: Number, min: 0, required: true },
-    expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Expense' }],
-    deadline: { type: Date, default: Date.now },
-    archived: { type: Boolean, default: false },
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    total_time_offered: {
+        type: Number,
+        min: 0,
+        required: true,
+    },
+    expenses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Expense',
+    }],
+    deadline: {
+        type: Date,
+        default: Date.now,
+    },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Position = mongoose.model('Position', PositionSchema);

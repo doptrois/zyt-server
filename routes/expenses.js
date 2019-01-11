@@ -30,7 +30,7 @@ router.get('/', [auth], async (req, res) => {
 
     if (!expenses) return res.status(404).send('No expenses found.');
 
-    // return only projects that are assigned to the user,
+    // return only expenses that are assigned to the user,
     // if user is not admin
     if (!req.user.admin) {
         expenses = expenses.filter((expense) => {
@@ -52,7 +52,7 @@ router.get('/week', [auth], async (req, res) => {
 
     if (!expenses) return res.status(404).send('No expenses found.');
 
-    // return only projects that are assigned to the user,
+    // return only expenses that are assigned to the user,
     // if user is not admin
     if (!req.user.admin) {
         expenses = expenses.filter((expense) => {
@@ -102,7 +102,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
 
     if (!expense) return res.status(404).send('The expense with the given ID was not found.');
 
-    // return only projects that are assigned to the user,
+    // return only epxpense that is assigned to the user,
     // if user is not admin
     if (!req.user.admin) {
         if (expense.user._id != req.user._id) return res.status(404).send('Access denied. You are not the owner.');
@@ -171,6 +171,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
 
     // update db
     expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
     return res.send(expense);
 });
 
@@ -182,6 +183,7 @@ router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     if (expense.user != req.user._id) return res.status(403).send('Access denied. You are not the owner.');
 
     expense = await Expense.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
+
     return res.send(expense);
 });
 
