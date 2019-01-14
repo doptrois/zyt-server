@@ -13,7 +13,7 @@ const populateConfig = [
     },
     {
         path: 'project',
-        select: 'briefing start deadline total_time_offered',
+        select: 'briefing start deadline total_time_offered name',
     },
     {
         path: 'owner',
