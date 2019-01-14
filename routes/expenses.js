@@ -84,12 +84,9 @@ router.get('/week', [auth], async (req, res) => {
     });
 
     if (!expenses.length) {
-        const humanDateMondayLong = mon.toLocaleDateString('de-DE', { weekday: 'long' }).toUpperCase();
-        const humanDateSundayLong = sun.toLocaleDateString('de-DE', { weekday: 'long' }).toUpperCase();
-
-        const humanDateMonday = `${humanDateMondayLong} ${(mon.getDate())}.${(mon.getMonth() + 1)}.${(mon.getFullYear())}`;
-        const humanDateSunday = `${humanDateSundayLong} ${(sun.getDate())}.${(sun.getMonth() + 1)}.${(sun.getFullYear())}`;
-        return res.status(404).send(`No expenses found for the week from ${humanDateMonday} to ${humanDateSunday}.`);
+        return res.status(404).send([{
+            recorded_time: 0.0001,
+        }]);
     }
 
     return res.send(expenses);
