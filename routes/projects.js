@@ -97,7 +97,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
     if (!req.user.admin) {
         if (
             !project.assigned_users.find(user => user._id == req.user._id)
-            || !project.project_managers.find(user => user._id == req.user._id)
+            && !project.project_managers.find(user => user._id == req.user._id)
         ) {
             return res.status(403).send('You are not assigned to this project.');
         }
@@ -134,12 +134,14 @@ router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
 
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!project) return res.status(404).send('The project with the given ID was not found.');
+
     return res.send(project);
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const project = await Project.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!project) return res.status(404).send('The project with the given ID was not found.');
+
     return res.send(project);
 });
 

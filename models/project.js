@@ -3,23 +3,66 @@ Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({
-    name: { type: String, required: true, trim: true },
+    name: {
+        type: String,
+        trim: true,
+        required: true,
+    },
     briefing: {
         type: {
-            title: { type: String, required: true, trim: true },
-            description: { type: String, required: true, trim: true },
+            title: {
+                type: String,
+                trim: true,
+                required: true,
+            },
+            description: {
+                type: String,
+                trim: true,
+                required: true,
+            },
         },
     },
-    project_managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    ressources: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ressource' }],
-    positions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Position' }],
-    expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Expense' }],
-    todos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Todo' }],
-    assigned_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    start: { type: Date, default: Date.now },
-    deadline: { type: Date, default: Date.now },
-    total_time_offered: { type: Number, min: 0, required: true },
-    archived: { type: Boolean, default: false },
+    project_managers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    ressources: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ressource',
+    }],
+    positions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Position',
+    }],
+    expenses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Expense',
+    }],
+    todos: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Todo',
+    }],
+    assigned_users: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    start: {
+        type: Date,
+        default: Date.now,
+    },
+    deadline: {
+        type: Date,
+        default: Date.now,
+    },
+    total_time_offered: {
+        type: Number,
+        min: 0,
+        required: true,
+    },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Project = mongoose.model('Project', projectSchema);

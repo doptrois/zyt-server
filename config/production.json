@@ -1,7 +1,3 @@
 {
-  "name": "Production",
-  "example": {
-    "key-one": "(production) value-one",
-    "key-two": "(production) value-two"
-  }
+  "name": "Test"
 }
