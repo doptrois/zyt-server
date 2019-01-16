@@ -19,9 +19,9 @@ The server repo for the web application zyt -> https://github.com/vschefer/zyt
 
 ## Demo Users
 
-| Admins                                                       | Employees                                                    |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| vanessa.schefer@domain.tld<br />michael.fischer@domain.tld<br/> | maximilian.mueller@domain.tld<br />hansruedi.mustermann@domain.tld<br />adrian.musterbergen@domain.tld |
+| Admins                                                       | Employees                     |
+| ------------------------------------------------------------ | ----------------------------- |
+| vanessa.schefer@domain.tld<br />michael.fischer@domain.tld<br/> | maximilian.mueller@domain.tld |
 
 Password for all users: ```zytApp2018!```
 
