@@ -84,7 +84,7 @@ router.get('/week', [auth], async (req, res) => {
     });
 
     if (!expenses.length) {
-        return res.status(404).send([{
+        return res.status(200).send([{
             recorded_time: 0.0001,
         }]);
     }
