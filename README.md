@@ -19,9 +19,9 @@ The server repo for the web application zyt -> https://github.com/vschefer/zyt
 
 ## Demo Users
 
-| Admins                                                       | Employees                                                    |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| vanessa.schefer@domain.tld<br />michael.fischer@domain.tld<br/> | maximilian.mueller@domain.tld<br />hansruedi.mustermann@domain.tld<br />adrian.musterbergen@domain.tld |
+| Admins                                                       | Employees                     |
+| ------------------------------------------------------------ | ----------------------------- |
+| vanessa.schefer@domain.tld<br />michael.fischer@domain.tld<br/> | maximilian.mueller@domain.tld |
 
 Password for all users: ```zytApp2018!```
 
@@ -37,5 +37,5 @@ https://documenter.getpostman.com/view/5816654/RznCqzWF
 Testing the API manually is now more comfortable.
 
 ## Automated tests
-
-Run ```npm test```
+1. Stop the node server, that was started via ```node index.js``` or ```nodemon index.js``` etc.
+2. Run ```npm test```
