@@ -7,13 +7,13 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     first_name: {
         type: String,
-        required: true,
         maxlength: 255,
+        required: true,
     },
     surname: {
         type: String,
-        required: true,
         maxlength: 255,
+        required: true,
     },
     admin: {
         type: Boolean,
@@ -21,9 +21,9 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
         maxlength: 255,
         unique: true,
+        required: true,
     },
     archived: {
         type: Boolean,
@@ -35,9 +35,9 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         minlength: 6,
         maxlength: 1024,
+        required: true,
     },
     expenses: [{
         type: mongoose.Schema.Types.ObjectId,

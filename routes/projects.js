@@ -2,7 +2,7 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const { Project, validate, validateExisting } = require('../models/project');
-const { Position, validatePositionOnProjectCreation } = require('../models/position');
+const { Position } = require('../models/position');
 const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
@@ -59,7 +59,7 @@ const populateConfig = [
         ],
     },
     {
-        path: 'expenses'
+        path: 'expenses',
     },
 ];
 
@@ -101,7 +101,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
     if (!req.user.admin) {
         if (
             !project.assigned_users.find(user => user._id == req.user._id)
-            || !project.project_managers.find(user => user._id == req.user._id)
+            && !project.project_managers.find(user => user._id == req.user._id)
         ) {
             return res.status(403).send('You are not assigned to this project.');
         }
@@ -114,7 +114,7 @@ router.post('/', [auth, admin], async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const positions = req.body.positions;
+    const { positions } = req.body;
     delete req.body.positions;
 
     let project = new Project(req.body);
@@ -124,7 +124,7 @@ router.post('/', [auth, admin], async (req, res) => {
     positions.forEach(async (pos) => {
         let position = new Position(pos);
         position = await position.save();
-        positionID = position._id;
+        const positionID = position._id;
 
         project = await Project.findByIdAndUpdate(projectID, { $push: { positions: positionID } });
     });
@@ -138,12 +138,14 @@ router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
 
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!project) return res.status(404).send('The project with the given ID was not found.');
+
     return res.send(project);
 });
 
 router.delete('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const project = await Project.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!project) return res.status(404).send('The project with the given ID was not found.');
+
     return res.send(project);
 });
 

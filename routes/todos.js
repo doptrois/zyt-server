@@ -29,6 +29,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
         .findById(req.params.id)
         .populate(populateConfig);
     if (!todo) return res.status(404).send('The todo with the given ID was not found.');
+
     return res.send(todo);
 });
 
@@ -56,12 +57,14 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
 
     const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!todo) return res.status(404).send('The todo with the given ID was not found.');
+
     return res.send(todo);
 });
 
 router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     const todo = await Todo.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
     if (!todo) return res.status(404).send('The todo with the given ID was not found.');
+
     return res.send(todo);
 });
 

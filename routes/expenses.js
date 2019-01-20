@@ -2,6 +2,8 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const { Expense, validate, validateExisting } = require('../models/expense');
 const { Project } = require('../models/project');
+const { Position } = require('../models/position');
+const { User } = require('../models/user');
 const oIdValidator = require('../middleware/oIdValidator');
 const router = express.Router();
 
@@ -16,8 +18,8 @@ const populateConfig = [
     },
     {
         path: 'position',
-        select: '-expenses'
-    }
+        select: '-expenses',
+    },
 ];
 
 router.get('/', [auth], async (req, res) => {
@@ -28,7 +30,7 @@ router.get('/', [auth], async (req, res) => {
 
     if (!expenses) return res.status(404).send('No expenses found.');
 
-    // return only projects that are assigned to the user,
+    // return only expenses that are assigned to the user,
     // if user is not admin
     if (!req.user.admin) {
         expenses = expenses.filter((expense) => {
@@ -50,7 +52,7 @@ router.get('/week', [auth], async (req, res) => {
 
     if (!expenses) return res.status(404).send('No expenses found.');
 
-    // return only projects that are assigned to the user,
+    // return only expenses that are assigned to the user,
     // if user is not admin
     if (!req.user.admin) {
         expenses = expenses.filter((expense) => {
@@ -70,18 +72,21 @@ router.get('/week', [auth], async (req, res) => {
     const mon = new Date(curr.setDate(first));
     const sun = new Date(curr.setDate(last));
 
+    const currentYear = new Date();
+
+    if (mon.getFullYear() < currentYear.getFullYear()) {
+        sun.setFullYear(currentYear.getFullYear());
+    }
+
     expenses = expenses.filter((expense) => {
         const date = new Date(expense.affected_date);
         return (date >= mon && date <= sun);
     });
 
     if (!expenses.length) {
-        const humanDateMondayLong = mon.toLocaleDateString('de-DE', { weekday: 'long' }).toUpperCase();
-        const humanDateSundayLong = sun.toLocaleDateString('de-DE', { weekday: 'long' }).toUpperCase();
-
-        const humanDateMonday = `${humanDateMondayLong} ${(mon.getDate())}.${(mon.getMonth() + 1)}.${(mon.getFullYear())}`;
-        const humanDateSunday = `${humanDateSundayLong} ${(sun.getDate())}.${(sun.getMonth() + 1)}.${(sun.getFullYear())}`;
-        return res.status(404).send(`No expenses found for the week from ${humanDateMonday} to ${humanDateSunday}.`);
+        return res.status(404).send([{
+            recorded_time: 0.0001,
+        }]);
     }
 
     return res.send(expenses);
@@ -94,7 +99,7 @@ router.get('/:id', [auth, oIdValidator], async (req, res) => {
 
     if (!expense) return res.status(404).send('The expense with the given ID was not found.');
 
-    // return only projects that are assigned to the user,
+    // return only epxpense that is assigned to the user,
     // if user is not admin
     if (!req.user.admin) {
         if (expense.user._id != req.user._id) return res.status(404).send('Access denied. You are not the owner.');
@@ -120,11 +125,25 @@ router.post('/', [auth], async (req, res) => {
 
     const projectID = req.body.project;
     const project = await Project.findByIdAndUpdate(projectID, { $push: { expenses: expenseID } });
-    if (!project) return res.status(404).send('Project not found');
+    if (!project) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('Project not found');
+    }
 
+    // push new expense into user
+    const user = await User.findByIdAndUpdate(req.body.user, { $push: { expenses: expenseID } });
+    if (!user) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('User not found');
+    }
+
+    // push new expense into position
     const positionID = req.body.position;
     const position = await Position.findByIdAndUpdate(positionID, { $push: { expenses: expenseID } });
-    if (!position) return res.status(404).send('The position with the given ID not found');
+    if (!position) {
+        expense = await Expense.findByIdAndDelete(expenseID);
+        return res.status(404).send('The position with the given ID not found');
+    }
 
     return res.send(expense);
 });
@@ -149,6 +168,7 @@ router.put('/:id', [auth, oIdValidator], async (req, res) => {
 
     // update db
     expense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
     return res.send(expense);
 });
 
@@ -160,6 +180,7 @@ router.delete('/:id', [auth, oIdValidator], async (req, res) => {
     if (expense.user != req.user._id) return res.status(403).send('Access denied. You are not the owner.');
 
     expense = await Expense.findByIdAndUpdate(req.params.id, { archived: true }, { new: true });
+
     return res.send(expense);
 });
 
