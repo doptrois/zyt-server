@@ -121,15 +121,19 @@ router.post('/', [auth, admin], async (req, res) => {
     project = await project.save();
     const projectID = project._id;
 
-    positions.forEach(async (pos) => {
-        let position = new Position(pos);
-        position = await position.save();
-        const positionID = position._id;
+    async function pushPositions(arr) { /* eslint-disable */
+        for (const pos of arr) {
+            let position = new Position(pos);
+            position = await position.save();
+            const positionID = position._id;
 
-        project = await Project.findByIdAndUpdate(projectID, { $push: { positions: positionID } });
-    });
-
-    return res.send(`Project with id ${project._id} created.`);
+            await Project.findByIdAndUpdate(projectID, { $push: { positions: positionID } });
+        }
+        project = await Project.findById(projectID);
+        return project;
+    }
+    project = await pushPositions(positions);
+    return res.send(project);
 });
 
 router.put('/:id', [auth, admin, oIdValidator], async (req, res) => {
