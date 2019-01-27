@@ -10,11 +10,6 @@ const projectSchema = new mongoose.Schema({
     },
     briefing: {
         type: {
-            title: {
-                type: String,
-                trim: true,
-                required: true,
-            },
             description: {
                 type: String,
                 trim: true,
@@ -72,7 +67,6 @@ function validateProject(project) {
     const schema = {
         name: Joi.string().required(),
         briefing: Joi.object({
-            title: Joi.string().required(),
             description: Joi.string().required(),
         }).required(),
         project_managers: Joi.array().items(Joi.objectId()),
@@ -98,7 +92,6 @@ function validateExistingProject(project) {
     const schema = {
         name: Joi.string().required(),
         briefing: Joi.object({
-            title: Joi.string().required(),
             description: Joi.string().required(),
         }).required(),
         project_managers: Joi.array().items(Joi.objectId()),
