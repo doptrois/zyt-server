@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const auth = require('../middleware/auth');
 const { Expense, validate, validateExisting } = require('../models/expense');
 const { Project } = require('../models/project');
@@ -63,29 +64,34 @@ router.get('/week', [auth], async (req, res) => {
         if (!expenses.length) return res.status(404).send('No expenses found with your user id.');
     }
 
-    // Filter by week
-    const curr = new Date();
-    let first = curr.getDate() - curr.getDay();
-    first += 1;
-    const last = first + 6;
+    // Filter by current week
+    const weekTimeReset = {
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+    };
 
-    const mon = new Date(curr.setDate(first));
-    const sun = new Date(curr.setDate(last));
+    const weekStart = moment().startOf('isoWeek').add(1, 'd').set(weekTimeReset);
+    const weekEnd = moment().endOf('isoWeek').add(1, 'd').set(weekTimeReset);
 
-    const currentYear = new Date();
+    const days = [];
+    let day = weekStart;
 
-    if (mon.getFullYear() < currentYear.getFullYear()) {
-        sun.setFullYear(currentYear.getFullYear());
+    while (day <= weekEnd) {
+        days.push(moment(day)._d);
+        day = day.clone().add(1, 'd');
     }
 
     expenses = expenses.filter((expense) => {
-        const date = new Date(expense.affected_date);
-        return (date >= mon && date <= sun);
+        const date = moment(expense.affected_date).add(1, 'd').set(weekTimeReset)._d;
+        return (date >= days[0] && date <= days[6]);
     });
 
     if (!expenses.length) {
-        return res.status(200).send([{
+        return res.status(206).send([{
             recorded_time: 0.0001,
+            message: 'No expenses found.',
         }]);
     }
 
