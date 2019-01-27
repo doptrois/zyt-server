@@ -46,6 +46,28 @@ router.get('/me', [auth], async (req, res) => {
     return res.send(users);
 });
 
+router.put('/me', [auth], async (req, res) => {
+    const { error } = validateExisting(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    let user = await User
+        .findById(req.user._id)
+        .populate(populateConfig);
+    if (!user) return res.status(404).send('The user with the given ID was not found.');
+
+    if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+        user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate(populateConfig);
+
+        const token = user.generateAuthToken();
+        return res.header('x-auth-token', token).send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
+    }
+    user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true }).populate(populateConfig);
+
+    return res.send(_.pick(user, ['_id', 'first_name', 'surname', 'email', 'avatar']));
+});
+
 router.get('/:id', [auth, admin, oIdValidator], async (req, res) => {
     const user = await User
         .findById(req.params.id)
