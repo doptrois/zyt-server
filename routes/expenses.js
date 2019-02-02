@@ -46,8 +46,6 @@ router.get('/', [auth], async (req, res) => {
 });
 
 router.get('/week/:number*?', [auth], async (req, res) => {
-    if (!req.params.number) return res.status(400).send('No number at the end provided. Add /0 for the current week, /-1 for the last week and so on.');
-
     let expenses = await Expense
         .find()
         .populate(populateConfig)
@@ -68,7 +66,7 @@ router.get('/week/:number*?', [auth], async (req, res) => {
 
     // Filter by current week
     // change negative to positive number for substraction if necessary
-    const requestedWeek = req.params.number == 0 ? 0 : req.params.number / -1;
+    const requestedWeek = req.params.number == 0 || typeof req.params.number === 'undefined' ? 0 : req.params.number / -1;
 
     const weekStart = moment().utc().startOf('isoWeek').subtract(requestedWeek * 7, 'days');
     const weekEnd = moment().utc().endOf('isoWeek').subtract(requestedWeek * 7, 'days');
