@@ -45,7 +45,9 @@ router.get('/', [auth], async (req, res) => {
     return res.send(expenses);
 });
 
-router.get('/week', [auth], async (req, res) => {
+router.get('/week/:number*?', [auth], async (req, res) => {
+    if (!req.params.number) return res.status(400).send('No number at the end provided. Add /0 for the current week, /-1 for the last week and so on.');
+
     let expenses = await Expense
         .find()
         .populate(populateConfig)
@@ -65,27 +67,23 @@ router.get('/week', [auth], async (req, res) => {
     }
 
     // Filter by current week
-    const weekTimeReset = {
-        hour: 0,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-    };
+    // change negative to positive number for substraction if necessary
+    const requestedWeek = req.params.number == 0 ? 0 : req.params.number / -1;
 
-    const weekStart = moment().startOf('isoWeek').add(1, 'd').set(weekTimeReset);
-    const weekEnd = moment().endOf('isoWeek').add(1, 'd').set(weekTimeReset);
+    const weekStart = moment().utc().startOf('isoWeek').subtract(requestedWeek * 7, 'days');
+    const weekEnd = moment().utc().endOf('isoWeek').subtract(requestedWeek * 7, 'days');
 
     const days = [];
     let day = weekStart;
 
     while (day <= weekEnd) {
-        days.push(moment(day)._d);
-        day = day.clone().add(1, 'd');
+        days.push(moment(day).utc()._d);
+        day = day.utc().clone().add(1, 'd');
     }
 
     expenses = expenses.filter((expense) => {
-        const date = moment(expense.affected_date).add(1, 'd').set(weekTimeReset)._d;
-        return (date >= days[0] && date <= days[6]);
+        const date = moment(expense.affected_date).utc()._d;
+        return (date >= days[0] && date <= moment(days[6]).utc().set({ hour: 23, minute: 59 }));
     });
 
     if (!expenses.length) {
