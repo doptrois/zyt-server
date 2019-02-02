@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const auth = require('../middleware/auth');
 const { Expense, validate, validateExisting } = require('../models/expense');
 const { Project } = require('../models/project');
@@ -44,7 +45,7 @@ router.get('/', [auth], async (req, res) => {
     return res.send(expenses);
 });
 
-router.get('/week', [auth], async (req, res) => {
+router.get('/week/:number*?', [auth], async (req, res) => {
     let expenses = await Expense
         .find()
         .populate(populateConfig)
@@ -63,29 +64,30 @@ router.get('/week', [auth], async (req, res) => {
         if (!expenses.length) return res.status(404).send('No expenses found with your user id.');
     }
 
-    // Filter by week
-    const curr = new Date();
-    let first = curr.getDate() - curr.getDay();
-    first += 1;
-    const last = first + 6;
+    // Filter by current week
+    // change negative to positive number for substraction if necessary
+    const requestedWeek = req.params.number == 0 || typeof req.params.number === 'undefined' ? 0 : req.params.number / -1;
 
-    const mon = new Date(curr.setDate(first));
-    const sun = new Date(curr.setDate(last));
+    const weekStart = moment().utc().startOf('isoWeek').subtract(requestedWeek * 7, 'days');
+    const weekEnd = moment().utc().endOf('isoWeek').subtract(requestedWeek * 7, 'days');
 
-    const currentYear = new Date();
+    const days = [];
+    let day = weekStart;
 
-    if (mon.getFullYear() < currentYear.getFullYear()) {
-        sun.setFullYear(currentYear.getFullYear());
+    while (day <= weekEnd) {
+        days.push(moment(day).utc()._d);
+        day = day.utc().clone().add(1, 'd');
     }
 
     expenses = expenses.filter((expense) => {
-        const date = new Date(expense.affected_date);
-        return (date >= mon && date <= sun);
+        const date = moment(expense.affected_date).utc()._d;
+        return (date >= days[0] && date <= moment(days[6]).utc().set({ hour: 23, minute: 59 }));
     });
 
     if (!expenses.length) {
-        return res.status(200).send([{
+        return res.status(206).send([{
             recorded_time: 0.0001,
+            message: 'No expenses found. To see expenses of the previous week, add /-1 to the endpoint and so on.',
         }]);
     }
 
