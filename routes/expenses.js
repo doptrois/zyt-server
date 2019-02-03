@@ -86,7 +86,7 @@ router.get('/week/:number*?', [auth], async (req, res) => {
 
     if (!expenses.length) {
         return res.status(206).send([{
-            recorded_time: 0.0001,
+            recorded_time: 0,
             message: 'No expenses found. To see expenses of the previous week, add /-1 to the endpoint and so on.',
         }]);
     }
