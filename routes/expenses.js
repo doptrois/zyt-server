@@ -11,7 +11,18 @@ const router = express.Router();
 const populateConfig = [
     {
         path: 'project',
-        select: 'name archived briefing total_time expected start deadline',
+        select: 'name archived briefing total_time expected start deadline positions',
+        populate: {
+            path: 'positions',
+            populate: {
+                path: 'expenses',
+                select: 'recorded_time user affected_date',
+                populate: {
+                    path: 'user',
+                    select: 'first_name surname archived',
+                },
+            },
+        },
     },
     {
         path: 'user',
