@@ -61,7 +61,7 @@ function validateUser(user) {
         email: Joi.string().max(255).required().email(),
         archived: Joi.boolean(),
         avatar: Joi.objectId().required(),
-        password: Joi.string().min(6).max(50).required(),
+        password: Joi.string().min(1).max(50).required(),
         expenses: Joi.array().items(Joi.objectId()),
     };
 
@@ -77,7 +77,7 @@ function validateExistingUser(user) {
         email: Joi.string().max(255).email(),
         archived: Joi.boolean(),
         avatar: Joi.objectId(),
-        password: Joi.string().min(6).max(50),
+        password: Joi.string().min(1).max(50),
         expenses: Joi.array().items(Joi.objectId()),
     };
 
